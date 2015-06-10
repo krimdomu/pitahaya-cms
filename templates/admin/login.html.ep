@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Pitahaya CMS / Login</title>
+        <link rel="stylesheet" href="/css/pitahaya/admin/style.css" media="screen">
+        <link rel="stylesheet" href="/js/pitahaya/dojo/1.10.4/dijit/themes/claro/claro.css" media="screen">
+
+        <link rel="stylesheet" href="/css/pitahaya/jstree/themes/default/style.css" />
+
+        <script src="/js/pitahaya/jquery-1.11.3.js"></script>
+
+    </head>
+    <body class="claro">
+
+      <div data-dojo-type="dijit/Dialog" data-dojo-id="login_dialog" id="login_dialog" title="Login">
+        <table class="dijitDialogPaneContentArea">
+          <tr>
+            <td><label for="login_username">Name:</label></td>
+            <td><input data-dojo-type="dijit/form/TextBox" name="login_username" id="login_username"></td>
+          </tr>
+          <tr>
+            <td><label for="login_password">Password:</label></td>
+            <td><input type="password" data-dojo-type="dijit/form/TextBox" name="login_password" id="login_password"></td>
+          </tr>
+          <tr>
+            <td><label for="login_site">Site:</label></td>
+            <td>
+              <select name="login_site" id="login_site" data-dojo-type="dijit/form/Select">
+                % for my $site (@{ $sites }) {
+                <option value="<%= $site->name %>"><%= $site->name %></option>
+                % }
+              </select>
+            </td>
+          </tr>
+        </table>
+
+        <div class="dijitDialogPaneActionBar">
+          <button data-dojo-type="dijit/form/Button" type="submit" id="login_button_ok">OK</button>
+          <button data-dojo-type="dijit/form/Button" type="button" data-dojo-props="" id="cancel">Cancel</button>
+        </div>
+      </div>
+
+        <!-- load dojo and provide config via data attribute -->
+        <script src="/js/pitahaya/dojo/1.10.4/dojo/dojo.js"></script>
+        <script src="/js/pitahaya/admin/login.js"></script>
+    </body>
+</html>

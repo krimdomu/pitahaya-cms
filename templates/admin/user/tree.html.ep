@@ -1,0 +1,24 @@
+<div data-dojo-type="dijit/layout/AccordionContainer">
+  <div data-dojo-type="dijit/layout/ContentPane" title="Users">
+    <div id="userTree"></div>
+  </div>
+</div>
+
+<div data-dojo-type="dijit/Dialog" data-dojo-id="new_user_dialog" title="New user">
+  <table class="dijitDialogPaneContentArea">
+    <tr>
+      <td><label for="dialog_user_username">Name:</label></td>
+      <td><input data-dojo-type="dijit/form/TextBox" name="dialog_user_username" id="dialog_user_username"></td>
+    </tr>
+    <tr>
+      <td><label for="dialog_user_password">Password:</label></td>
+      <td><input type="password" data-dojo-type="dijit/form/TextBox" name="dialog_user_password" id="dialog_user_password"></td>
+    </tr>
+  </table>
+
+  <div class="dijitDialogPaneActionBar">
+    <button data-dojo-type="dijit/form/Button" type="submit" id="dialog_new_user_ok">OK</button>
+    <button data-dojo-type="dijit/form/Button" type="button" data-dojo-props="onClick:function(){new_user_dialog.hide();}"
+      id="cancel">Cancel</button>
+  </div>
+</div>

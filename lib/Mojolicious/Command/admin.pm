@@ -1,0 +1,338 @@
+package Mojolicious::Command::admin;
+
+use Mojo::Base 'Mojolicious::Command';
+use Getopt::Long qw(GetOptionsFromArray);
+use DBIx::Class::DeploymentHandler;
+
+use File::Path qw(make_path);
+use FindBin;
+use File::Basename qw(dirname basename);
+use Data::Dumper;
+
+use 5.010;
+
+has description => 'Pitahaya Commands';
+has usage => sub { shift->extract_usage };
+
+my ( $dh, $from_version, $to_version, $version );
+
+sub run {
+  my ( $self, $command, @args ) = @_;
+
+  if ( $command eq "page_type" ) {
+    my ( $name, $site, $desc, $create );
+    GetOptionsFromArray \@args,
+      's|site=s'        => sub { $site   = $_[1] },
+      't|type=s'        => sub { $name   = $_[1] },
+      'd|description=s' => sub { $desc   = $_[1] },
+      'c|create'        => sub { $create = $_[1] };
+
+    if ($create) {
+      if ( !$name ) {
+        $self->app->log->error(
+          "You have to specify the name of the page type.");
+        return;
+      }
+
+      if ( !$site ) {
+        $self->app->log->error("You have to specify the name of the site.");
+        return;
+      }
+
+      my $site_o =
+        $self->app->db->resultset("Site")->search_rs( { name => $site } )->next;
+
+      if ( !$site_o ) {
+        $self->app->log->error("No site $site found.");
+        return;
+      }
+
+      my $ref = {
+        site_id     => $site_o->id,
+        name        => $name,
+        description => ( $desc || '' ),
+      };
+
+      my $new_type = $self->app->db->resultset("PageType")->create($ref);
+
+      $self->app->log->info(
+        "New page type created with id: " . $new_type->id );
+    }
+  }
+
+  if ( $command eq "config" ) {
+    my ( $db_host, $db_schema, $db_user, $db_pass );
+    GetOptionsFromArray \@args,
+      'h|host=s'     => sub { $db_host   = $_[1] },
+      's|schema=s'   => sub { $db_schema = $_[1] },
+      'u|user=s'     => sub { $db_user   = $_[1] },
+      'p|password=s' => sub { $db_pass   = $_[1] };
+
+    if ( !$db_host ) {
+      $self->app->log->error("You have to specify the database host");
+      exit 1;
+    }
+
+    if ( !$db_schema ) {
+      $self->app->log->error("You have to specify the database schema");
+      exit 1;
+    }
+
+    if ( !$db_user ) {
+      $self->app->log->error("You have to specify the database user");
+      exit 1;
+    }
+
+    if ( !$db_pass ) {
+      $self->app->log->error("You have to specify the database password");
+      exit 1;
+    }
+
+    open( my $fh, ">", "pitahaya.conf" )
+      or die("Can't write pitahaya.conf: $!");
+    print $fh qq~
+{
+  database => {
+    host     => "$db_host",
+    schema   => "$db_schema",
+    username => "$db_user",
+    password => "$db_pass",
+  },
+  tmp_dir  => "./tmp",
+  data_dir => "./data",
+  session  => {
+    key => 'pitahaya.cms'
+  },
+  export => {
+    dir => "./export",
+  }
+}
+~;
+
+    close($fh);
+
+    $self->app->log->info("Basic configuration file written (pitahaya.conf).");
+  }
+
+  if ( $command eq "project" ) {
+    my ($project);
+    GetOptionsFromArray \@args, 'n|name=s' => sub { $project = $_[1] };
+
+    if ( !$project ) {
+      $self->app->log->error("You have to specify the name of the project");
+      exit 1;
+    }
+
+    make_path "$project/bin";
+    make_path "$project/tmp";
+    make_path "$project/data";
+    make_path "$project/export";
+
+    symlink "$FindBin::Bin/$FindBin::Script", "$project/bin/" . $FindBin::Script;
+
+    $self->app->log->info("New Pitahaya project created.");
+    $self->app->log->info("You can now start with your project by switchting to $project directory.");
+    $self->app->log->info("Please create a configuration and initialize the database.");
+    $self->app->log->info("");
+    $self->app->log->info("To create a configuration file use:");
+    $self->app->log->info("  bin/pitahaya admin config --host db_host --schema db_schema --user db_user --password db_pass");
+    $self->app->log->info("To initialize the database use:");
+    $self->app->log->info("  bin/pitahaya admin db --init");
+    $self->app->log->info("");
+    $self->app->log->info("To create a new site use:");
+    $self->app->log->info("  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name");
+  }
+
+  if ( $command eq "db" ) {
+
+    if ( !-f "pitahaya.conf" ) {
+      $self->app->log->error("No pitahaya.conf found.");
+      exit 1;
+    }
+
+    my $schema                 = $self->app->schema;
+    my $deployment_handler_dir = "$FindBin::RealBin/../db_upgrades";
+
+    my ( $init, $update );
+    GetOptionsFromArray \@args,
+      'i|init'   => sub { $init   = $_[1] },
+      'u|update' => sub { $update = $_[1] };
+
+    $dh = DBIx::Class::DeploymentHandler->new(
+      {
+        schema           => $schema,
+        script_directory => $deployment_handler_dir,
+        databases        => 'PostgreSQL',
+        force_overwrite  => 1,
+      }
+    );
+
+    die "We only support positive integers for versions."
+      unless $dh->schema_version =~ /^\d+$/;
+    if ($init) {
+      install();
+    }
+
+    $self->app->log->info("Database initialize. This database is empty.");
+    $self->app->log->info("To continue you have to create a new site.");
+    $self->app->log->info("");
+    $self->app->log->info("To create a new site use:");
+    $self->app->log->info("  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name");
+  }
+
+  if ( $command eq "site" ) {
+    my ( $name, $skin, $create );
+    GetOptionsFromArray \@args,
+      'n|name=s' => sub { $name   = $_[1] },
+      's|skin=s' => sub { $skin   = $_[1] },
+      'c|create' => sub { $create = $_[1] };
+
+    if ( $create && -f "pitahaya.conf" ) {
+      $self->app->log->error("You have to specify the name of the site")
+        if ( !$name );
+      $self->app->log->error("You have to specify the skin of the site")
+        if ( !$skin );
+
+      $self->app->log->info("Creating new site: $name with skin: $skin");
+
+      my $site_o = $self->app->db->resultset("Site")
+        ->create( { name => $name, skin => $skin } );
+
+      if ($site_o) {
+        $self->app->log->info( "Created new site with id: " . $site_o->id );
+
+        my $user_rs = $self->app->db->resultset("User")->search()->next;
+        my $user_o;
+        if ( !$user_rs ) {
+          $self->app->log->info("No users found. Creating new one.");
+          $user_o = $self->app->db->resultset("User")->create(
+            {
+              username => "admin",
+              password => "admin",
+            }
+          );
+
+          $self->app->log->info("Created new user admin with password admin.");
+        }
+        else {
+          $user_o = $user_rs;
+        }
+
+        my ( @page_types, @media_types );
+
+        for my $page_type (qw/index page/) {
+          $self->app->log->info("Creating page type: $page_type");
+
+          push @page_types,
+            $self->app->db->resultset("PageType")->create(
+            {
+              site_id => $site_o->id,
+              name    => $page_type,
+            }
+            );
+        }
+
+        for my $media_type (qw/index folder image object/) {
+          $self->app->log->info("Creating media type: $media_type");
+
+          push @media_types,
+            $self->app->db->resultset("MediaType")->create(
+            {
+              site_id => $site_o->id,
+              name    => $media_type,
+            }
+            );
+        }
+
+        $self->app->log->info("Creating root page");
+        my $root_page = $self->app->db->resultset("Page")->create(
+          {
+            site_id    => $site_o->id,
+            lft        => 1,
+            rgt        => 2,
+            level      => 0,
+            hidden     => 0,
+            navigation => 1,
+            active     => 1,
+            name       => 'Home',
+            url        => 'Home',
+            type_id    => $page_types[0]->id,
+            creator_id => $user_o->id,
+          }
+        );
+
+        $self->app->log->info("Creating root media folder");
+        my $root_media = $self->app->db->resultset("Media")->create(
+          {
+            site_id    => $site_o->id,
+            lft        => 1,
+            rgt        => 2,
+            level      => 0,
+            hidden     => 0,
+            active     => 1,
+            name       => 'Root',
+            url        => 'Root.html',
+            type_id    => $media_types[0]->id,
+            creator_id => $user_o->id,
+          }
+        );
+
+        $self->app->log->info( "Page " . $site_o->name . " created." );
+
+        # create needed folders
+        my $bin_path = $FindBin::Bin;
+        make_path "templates/skin/$skin";
+        make_path "templates/layouts/$skin";
+        make_path "vendor/site/$name";
+      }
+
+      $self->app->log->info("");
+      $self->app->log->info("Your new site is now created. You can start the application server and login to the adminarea now.");
+      $self->app->log->info("To start the application server use:");
+      $self->app->log->info("  bin/pitahaya daemon");
+      $self->app->log->info("");
+      $self->app->log->info("To log into the adminarea point your browser to http://localhost:3000/admin/login");
+      $self->app->log->info("  User     : admin");
+      $self->app->log->info("  Password : admin");
+    }
+  }
+}
+
+sub prepare {
+  say "running prepare_install()";
+  $dh->prepare_install;
+
+  if ( defined $from_version && defined $to_version ) {
+    say
+      "running prepare_upgrade({ from_version => $from_version, to_version => $to_version })";
+    $dh->prepare_upgrade(
+      {
+        from_version => $from_version,
+        to_version   => $to_version,
+      }
+    );
+  }
+}
+
+sub install {
+  if ( defined $version ) {
+    $dh->install( { version => $version } );
+  }
+  else {
+    $dh->install;
+  }
+}
+
+sub upgrade {
+  $dh->upgrade;
+}
+
+sub database_version {
+  say $dh->database_version;
+}
+
+sub schema_version {
+  say $dh->schema_version;
+}
+
+1;

@@ -1,0 +1,115 @@
+% my $stash = stash();
+
+<div class="tabPanel" data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region: 'center'">
+
+  <form name="media_edit" id="media_edit">
+
+    <input type="hidden" id="media_id" name="id" value="<%= $media->id %>" />
+
+    <!-- -------------------------------------------------------------------------------- -->
+    <!-- basic media settings -->
+    <!-- -------------------------------------------------------------------------------- -->
+
+
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Information'">
+      <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Common settings'">
+        <table border="0">
+          <tr>
+            <td><label for="media_name">Name:</label></td>
+            <td><input id="media_name" name="name" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td><label for="media_url">URL:</label></td>
+            <td><input id="media_url" name="url" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td><label for="media_title">Title:</label></td>
+            <td><input id="media_title" name="title" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td valign="top"><label for="media_description">Description:</label></td>
+            <td>
+              <textarea id="media_description" name="description" data-dojo-type="dijit/form/SimpleTextarea" rows="4" cols="50" style="width: auto;"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="media_type">Type:</label></td>
+            <td>
+              <select id="media_type" name="type" data-dojo-type="dijit/form/Select">
+                % for my $type ($site->get_media_types) {
+                % if($media->type->id eq $type->id) {
+                <option value="<%= $type->id %>" selected="selected"><%= $type->name %></option>
+                % } else {
+                <option value="<%= $type->id %>"><%= $type->name %></option>
+                % }
+                % }
+              </select>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <br />
+
+      <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Publish settings'">
+        <table border="0">
+          <tr>
+            <td><label for="media_hidden">Hidden media:</label></td>
+            <td>
+              <input id="media_hidden" name="hidden" data-dojo-type="dijit/form/CheckBox">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              &nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td><label for="media_rel_date">Release Date/Time:</label></td>
+            <td>
+              <input id="media_rel_date" data-dojo-type="dijit/form/DateTextBox" constraints="{datePattern:'yyyy-MM-dd', strict:true}">
+              <input id="media_rel_time" data-dojo-type="dijit/form/TimeTextBox" constraints="{timePattern: 'HH:mm', strict:true}">
+            </td>
+          </tr>
+          <tr>
+            <td><label for="media_lock_date">Lock Date/Time:</label></td>
+            <td>
+              <input id="media_lock_date" data-dojo-type="dijit/form/DateTextBox" constraints="{datePattern:'yyyy-MM-dd', strict:true}">
+              <input id="media_lock_time" data-dojo-type="dijit/form/TimeTextBox" constraints="{timePattern: 'HH:mm', strict:true}">
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <br />
+
+      % if($stash->{info_media}) {
+      %== $stash->{info_media}
+      % }
+
+    </div>
+
+    <!-- -------------------------------------------------------------------------------- -->
+    <!-- custom tabs -->
+    <!-- -------------------------------------------------------------------------------- -->
+
+    % if($stash->{custom_tabs}) {
+    %== $stash->{custom_tabs}
+    % }
+
+
+  </form>
+</div>
+
+<!-- -------------------------------------------------------------------------------- -->
+<!-- some popup dialogs -->
+<!-- -------------------------------------------------------------------------------- -->
+
+<div id="upload_media_object" data-dojo-type="dijit.Dialog" title="Upload Media Objects">
+  <form action="media/<%= $page->id %>" method="post" accept-charset="utf-8">
+    
+  <input id="upload_media_object_elem" type="file"
+    name="uploadedfiles[]" data-url="media/<%= $page->id %>"
+    multiple="multiple">
+  </form>
+</div>

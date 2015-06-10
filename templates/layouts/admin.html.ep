@@ -1,0 +1,160 @@
+<!DOCTYPE HTML>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Pitahaya CMS / Layout</title>
+        <link rel="stylesheet" href="/css/pitahaya/admin/style.css" media="screen">
+        <link rel="stylesheet" href="/js/pitahaya/dojo/1.10.4/dijit/themes/claro/claro.css" media="screen">
+
+        <link rel="stylesheet" href="/js/pitahaya/dojo/1.10.4/dojox/editor/plugins/resources/css/FindReplace.css" />
+        <link rel="stylesheet" href="/js/pitahaya/dojo/1.10.4/dojox/editor/plugins/resources/css/PasteFromWord.css" />
+        <link rel="stylesheet" href="/js/pitahaya/dojo/1.10.4/dojox/editor/plugins/resources/css/InsertAnchor.css" />
+        <link rel="stylesheet" href="/js/pitahaya/dojo/1.10.4/dojox/editor/plugins/resources/css/Blockquote.css" />
+
+        <link rel="stylesheet" href="/css/pitahaya/jstree/themes/default/style.css" />
+
+        <script src="/js/pitahaya/jquery-1.11.3.js"></script>
+        <script src="/js/pitahaya/file-upload/js/vendor/jquery.ui.widget.js"></script>
+        <script src="/js/pitahaya/jstree.js"></script>
+        <script src="/js/pitahaya/file-upload/js/jquery.iframe-transport.js"></script>
+        <script src="/js/pitahaya/file-upload/js/jquery.fileupload.js"></script>
+        <script src="/js/pitahaya/tinymce/js/tinymce/tinymce.js"></script>
+
+    </head>
+    <body class="claro">
+        <div id="appLayout" class="appLayout"
+          data-dojo-type="dijit/layout/BorderContainer"
+          data-dojo-props="design: 'headline'"
+          >
+            <div id="main_admin_area" class="centerPanel"
+              data-dojo-type="dojox/layout/ContentPane"
+              data-dojo-props="region: 'center'"
+              >
+            </div>
+
+            <div class="edgePanel"
+              data-dojo-type="dijit/layout/ContentPane"
+              data-dojo-props="region: 'top'">
+
+              <div id="mainMenu" data-dojo-type="dijit/MenuBar">
+
+                  <div id="fileMenu" data-dojo-type="dijit/PopupMenuBarItem">
+                    <span>File</span>
+                    <div id="fileMenuMenu" data-dojo-type="dijit/Menu">
+
+                      <div id="file_new_menu" data-dojo-type="dijit/PopupMenuItem">
+                        <span>New...</span>
+                        <div id="fileNewMenu" data-dojo-type="dijit/DropDownMenu">
+                          <div id="file_new_page" data-dojo-type="dijit/MenuItem">
+                            Page
+                          </div>
+                          <div id="file_new_folder" data-dojo-type="dijit/MenuItem">
+                            Folder
+                          </div>
+                          <div id="file_new_media_object" data-dojo-type="dijit/MenuItem">
+                            Media Object
+                          </div>
+                          <div data-dojo-type="dijit/MenuSeparator"></div>
+                          <div id="file_new_user" data-dojo-type="dijit/MenuItem">
+                            User
+                          </div>
+                        </div>
+
+
+
+                      </div>
+
+                      <div id="file_save" data-dojo-type="dijit/MenuItem">
+                        Save
+                      </div>
+                      <div id="file_delete" data-dojo-type="dijit/MenuItem">
+                        Delete
+                      </div>
+                      <div data-dojo-type="dijit/MenuSeparator"></div>
+                      <div id="file_exit" data-dojo-type="dijit/MenuItem">
+                        Exit Admin
+                      </div>
+                    </div>
+                  </div>
+                  <div id="viewMenu" data-dojo-type="dijit/PopupMenuBarItem">
+                    <span>View</span>
+                    <div id="ViewMenuMenu" data-dojo-type="dijit/Menu">
+                      <div id="view_page" data-dojo-type="dijit/MenuItem">
+                        Pages
+                      </div>
+                      <div id="view_user" data-dojo-type="dijit/MenuItem">
+                        Users
+                      </div>
+                    </div>
+                  </div>
+
+                  <div id="adminMenu" data-dojo-type="dijit/PopupMenuBarItem">
+                    <span>Admin</span>
+                    <div id="AdminMenuMenu" data-dojo-type="dijit/Menu">
+                      <div id="admin_export" data-dojo-type="dijit/MenuItem">
+                        Export
+                      </div>
+                      <div id="admin_import" data-dojo-type="dijit/MenuItem">
+                        Import
+                      </div>
+                    </div>
+                  </div>
+              </div>
+
+            </div>
+
+            <div id="leftCol" class="edgePanel"
+              data-dojo-type="dijit/layout/ContentPane"
+              data-dojo-props="region: 'left', splitter: true">
+            </div>
+        </div>
+        <!-- load dojo and provide config via data attribute -->
+        <script src="/js/pitahaya/dojo/1.10.4/dojo/dojo.js"
+                data-dojo-config="async: true, parseOnLoad: true">
+        </script>
+        <script>
+            require(["dojo/parser", "dijit/layout/BorderContainer", "dijit/layout/TabContainer",
+                "dijit/layout/ContentPane",
+                "dojox/layout/ContentPane",
+                "dijit/Menu", "dijit/MenuItem", "dijit/MenuBar", "dijit/PopupMenuBarItem", "dijit/MenuSeparator",
+                "dijit/layout/TabContainer",
+                "dijit/TitlePane",
+                "dijit/form/TextBox",
+                "dijit/form/ValidationTextBox",
+                "dijit/form/DateTextBox",
+                "dijit/form/TimeTextBox",
+                "dijit/form/CheckBox",
+                "dijit/form/Select",
+                "dijit/form/SimpleTextarea",
+                "dijit/layout/AccordionContainer",
+                "dijit/Editor",
+                "dijit/_editor/plugins/LinkDialog",
+                "dijit/_editor/plugins/ViewSource",
+                "dijit/_editor/plugins/EnterKeyHandling",
+                "dijit/_editor/plugins/FontChoice",
+                "dojox/editor/plugins/FindReplace",
+                "dojox/editor/plugins/PasteFromWord",
+                "dojox/editor/plugins/InsertAnchor",
+                "dojox/editor/plugins/Blockquote",
+                "dojox/editor/plugins/TablePlugins",
+                "admin/Editor/LinkDialog",
+                "admin/Editor/ImageDialog",
+                "admin/Editor/Snippets"
+                ]);
+        </script>
+        <script src="/js/pitahaya/admin/admin.js"></script>
+
+        <script src="/js/pitahaya/admin/page.js"></script>
+        <script src="/js/pitahaya/admin/media.js"></script>
+        <script src="/js/pitahaya/admin/user.js"></script>
+
+        <script src="/js/pitahaya/admin/functions.js"></script>
+        <script src="/js/pitahaya/admin/functions/page.js"></script>
+        <script src="/js/pitahaya/admin/functions/media.js"></script>
+        <script src="/js/pitahaya/admin/functions/user.js"></script>
+
+        <script src="/js/pitahaya/notify.js"></script>
+
+    </body>
+</html>

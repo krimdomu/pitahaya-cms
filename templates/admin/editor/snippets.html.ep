@@ -1,0 +1,9 @@
+<div id="pnl_outer_snippet_<%= param("uid") %>" data-dojo-type="dijit/layout/ContentPane">
+
+  <select name="html_snippet_<%= param("uid") %>" id="html_snippet_<%= param("uid") %>" data-dojo-type="dijit/form/Select">
+    % for my $snippet (@{ $snippets }) {
+    <option value="<%= $snippet->{id} %>"><%= $snippet->{name} %></option>
+    % }
+  </select>
+
+</div>

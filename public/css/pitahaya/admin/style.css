@@ -1,0 +1,32 @@
+html, body {
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    padding: 0;
+}
+
+#appLayout {
+    height: 100%;
+}
+
+#leftCol {
+    width: 14em;
+}
+
+.claro .appLayout .edgePanel {
+    background-color: #ffffff;
+}
+
+.edgePanel {
+  margin: 0;
+  padding: 0;
+}
+
+.editSnippets {
+  background-image: url(/images/pitahaya/icons/application_view_tile.png);
+  background-repeat: no-repeat;
+  height: 18px;
+  text-align: center;
+  width: 18px;
+  background-position: 0px 2px;
+}

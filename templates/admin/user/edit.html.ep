@@ -1,0 +1,33 @@
+% my $stash = stash();
+
+<div class="tabPanel" data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region: 'center'">
+
+  <form name="user_edit" id="user_edit">
+
+    <input type="hidden" id="user_id" name="id" value="<%= $user->id %>" />
+
+    <!-- -------------------------------------------------------------------------------- -->
+    <!-- basic page settings -->
+    <!-- -------------------------------------------------------------------------------- -->
+
+
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Information'">
+      <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Common settings'">
+        <table border="0">
+          <tr>
+            <td><label for="user_username">Name:</label></td>
+            <td><input id="user_username" name="username" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td><label for="user_password">Password:</label></td>
+            <td><input id="user_password" name="password" type="password" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td><label for="user_email">E-Mail:</label></td>
+            <td><input id="user_email" name="email" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+        </table>
+      </div>
+
+  </form>
+</div>

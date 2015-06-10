@@ -1,0 +1,287 @@
+% my $stash = stash();
+
+<div class="tabPanel" id="tabPageEdit" data-dojo-type="dijit/layout/TabContainer" data-dojo-props="region: 'center'">
+
+  <form name="page_edit" id="page_edit">
+
+    <input type="hidden" id="page_id" name="id" value="<%= $page->id %>" />
+
+    <!-- -------------------------------------------------------------------------------- -->
+    <!-- basic page settings -->
+    <!-- -------------------------------------------------------------------------------- -->
+
+
+    <div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Information'">
+      <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Common settings'">
+        <table border="0">
+          <tr>
+            <td><label for="page_name">Name:</label></td>
+            <td><input id="page_name" name="name" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td><label for="page_url">URL:</label></td>
+            <td><input id="page_url" name="url" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td><label for="page_title">Title:</label></td>
+            <td><input id="page_title" name="title" data-dojo-type="dijit/form/TextBox"></td>
+          </tr>
+          <tr>
+            <td valign="top"><label for="page_description">Description:</label></td>
+            <td>
+              <textarea id="page_description" name="description" data-dojo-type="dijit/form/SimpleTextarea" rows="4" cols="50" style="width: auto;"></textarea>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="page_type">Type:</label></td>
+            <td>
+              <select id="page_type" name="type" data-dojo-type="dijit/form/Select">
+                % for my $type ($site->get_page_types) {
+                % if($page->type->id == $type->id) {
+                <option value="<%= $type->id %>" selected="selected"><%= $type->name %></option>
+                % } else {
+                <option value="<%= $type->id %>"><%= $type->name %></option>
+                % }
+                % }
+              </select>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <br />
+
+      <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Publish settings'">
+        <table border="0">
+          <tr>
+            <td><label for="page_active">Active:</label></td>
+            <td>
+              <input id="page_active" name="active" data-dojo-type="dijit/form/CheckBox">
+            </td>
+          </tr>
+          <tr>
+            <td><label for="page_navigation">Show in navigation:</label></td>
+            <td>
+              <input id="page_navigation" name="navigation" data-dojo-type="dijit/form/CheckBox">
+            </td>
+          </tr>
+          <tr>
+            <td><label for="page_hidden">Hidden page:</label></td>
+            <td>
+              <input id="page_hidden" name="hidden" data-dojo-type="dijit/form/CheckBox">
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              &nbsp;
+            </td>
+          </tr>
+          <tr>
+            <td><label for="page_rel_date">Release Date/Time:</label></td>
+            <td>
+              <input id="page_rel_date" data-dojo-type="dijit/form/DateTextBox" constraints="{datePattern:'yyyy-MM-dd', strict:true}">
+              <input id="page_rel_time" data-dojo-type="dijit/form/TimeTextBox" constraints="{timePattern: 'HH:mm', strict:true}">
+            </td>
+          </tr>
+          <tr>
+            <td><label for="page_lock_date">Lock Date/Time:</label></td>
+            <td>
+              <input id="page_lock_date" data-dojo-type="dijit/form/DateTextBox" constraints="{datePattern:'yyyy-MM-dd', strict:true}">
+              <input id="page_lock_time" data-dojo-type="dijit/form/TimeTextBox" constraints="{timePattern: 'HH:mm', strict:true}">
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <br />
+
+      % if($stash->{info_page}) {
+      %== $stash->{info_page}
+      % }
+
+    </div>
+
+    <!-- -------------------------------------------------------------------------------- -->
+    <!-- content editing -->
+    <!-- -------------------------------------------------------------------------------- -->
+
+    <div id="page_content_content_pane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Content'">
+      <textarea name="page_content" class="wysiwyg_editor" id="page_content" rows="8" cols="40"></textarea>
+    </div>
+
+    <!-- -------------------------------------------------------------------------------- -->
+    <!-- custom tabs -->
+    <!-- -------------------------------------------------------------------------------- -->
+
+    % if($stash->{custom_tabs}) {
+    %== $stash->{custom_tabs}
+    % }
+
+
+  </form>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  function onpage_load(data) {
+    $("#page_content").val(data['content'] || "");
+
+    tinymce.init({
+      selector: "#page_content",
+      content_css: "/css/skin/<%= $site->skin %>/admin/editor.css",
+      toolbar: [ "undo redo | styleselect | bold italic | link image | table" ],
+      menubar: false,
+      plugins: "link image table",
+      file_browser_callback: function(field_name, url, type, win) {
+        //win.document.getElementById(field_name).value = "foo bar baz";
+        page_select_dialog.show();
+        document.getElementById("page_select_dialog").style.zIndex = 100000;
+        $GLOBAL['page_select_dialog_field'] = field_name;
+      },
+      link_list: true,
+      link_class_list: [
+        {title: "None", value: ""},
+        {title: "Button", value: "btn"},
+      ]
+    });
+
+    $GLOBAL.registry.byId("tabPageEdit").watch("selectedChildWidget", function(name, oval, nval) {
+      $("#" + tinyMCE.get('page_content').id + "_ifr").height($("#page_content_content_pane").height() - 110);
+    });
+
+    $(window).on("resize", function() {
+      $("#" + tinyMCE.get('page_content').id + "_ifr").height($("#page_content_content_pane").height() - 110);
+    });
+
+
+    if(typeof $GLOBAL['linkPageTree'] == "undefined") {
+
+      $GLOBAL['linkPageTree'] = $('#linkPageTree').jstree({
+        core: {
+          check_callback: true,
+          data: {
+            url: function(node) {
+              if(node.id === '#') {
+                return "./page/tree";
+              }
+              else {
+                return "./page/tree/children/" + node.id;
+              }
+            }
+          }
+        }
+      });
+
+      $GLOBAL.linkPageTree.on("changed.jstree", function(e, data) {
+        var item = data.instance.get_node(data.selected[0]);
+
+        var xpath = data.instance.get_path(item, "/", true).split("/");
+        xpath.shift();
+
+        var url = new Array();
+        for( var p in xpath ) {
+          if(xpath.hasOwnProperty(p)) {
+            var item_data = data.instance.get_node(xpath[p]).data;
+            url.push(item_data.url);
+          }
+        }
+
+        document.getElementById($GLOBAL['page_select_dialog_field']).value = "/" + url.join("/") + ".html";
+      });
+
+    }
+
+    if(typeof $GLOBAL['imgMediaTree'] == "undefined") {
+
+      $GLOBAL['imgMediaTree'] = $('#imgMediaTree').jstree({
+        core: {
+          check_callback: true,
+          data: {
+            url: function(node) {
+              if(node.id === '#') {
+                return "./media/tree";
+              }
+              else {
+                return "./media/tree/children/" + node.id;
+              }
+            }
+          }
+        }
+      });
+
+      $GLOBAL.imgMediaTree.on("changed.jstree", function(e, data) {
+        var item = data.instance.get_node(data.selected[0]);
+        //var url_field = self._uniqueId + "_urlInput";
+
+        var xpath = data.instance.get_path(item, "/", true).split("/");
+        xpath.shift();
+
+        var url = new Array();
+        for( var p in xpath ) {
+          if(xpath.hasOwnProperty(p)) {
+            var item_data = data.instance.get_node(xpath[p]).data;
+            url.push(item_data.url);
+          }
+        }
+
+        document.getElementById($GLOBAL['page_select_dialog_field']).value = "/media/" + url.join("/");
+      });
+
+    }
+  }
+
+  function onpage_save() {
+    page_set("content", tinyMCE.get('page_content').getContent());
+  }
+
+  function onpage_unload() {
+    tinymce.remove("#page_content");
+    delete $GLOBAL['page_select_dialog_field'];
+  }
+</script>
+
+
+<div data-dojo-type="dijit/Dialog" data-dojo-id="page_select_dialog" id="page_select_dialog" title="Select Page" style="z-index: 100000;">
+
+
+  <div id="page_select_Layout" class="appLayout"
+    data-dojo-type="dijit/layout/BorderContainer"
+    data-dojo-props="design: 'headline'"
+    style="width: 850px; height: 550px"
+    >
+    <div id="page_select_main_area" class="centerPanel"
+      data-dojo-type="dojox/layout/ContentPane"
+      data-dojo-props="region: 'center'"
+      >
+    </div>
+
+
+    <div id="page_select_leftCol" class="edgePanel"
+      data-dojo-type="dijit/layout/ContentPane"
+      data-dojo-props="region: 'left', splitter: true"
+      style="width: 250px;">
+
+      <div data-dojo-type="dijit/layout/AccordionContainer">
+        <div data-dojo-type="dijit/layout/ContentPane" title="Pages">
+          <div id="linkPageTree"></div>
+        </div>
+        <div data-dojo-type="dijit/layout/ContentPane" title="Media Files">
+          <div id="imgMediaTree"></div>
+        </div>
+      </div>
+
+    </div>
+
+
+    <div id="page_select_Bottom" class="dijitDialogPaneActionBar"
+      data-dojo-type="dijit/layout/ContentPane"
+      data-dojo-props="region: 'bottom'">
+
+      <button data-dojo-type="dijit/form/Button" type="submit" id="select_page_ok">OK</button>
+      <button data-dojo-type="dijit/form/Button" type="button" data-dojo-props="" id="select_page_cancel">Cancel</button>
+
+  </div>
+
+      <!--
+  -->
+
+</div>

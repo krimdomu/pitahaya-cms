@@ -1,0 +1,3 @@
+% layout 'admin';
+
+admin/index (<%= $site->id %>)

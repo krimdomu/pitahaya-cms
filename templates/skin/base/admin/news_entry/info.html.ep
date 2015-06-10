@@ -1,0 +1,43 @@
+
+<div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'News settings'">
+  <table border="0">
+    <tr>
+      <td><label for="page_news_date">News Date/Time:</label></td>
+      <td>
+        <input id="page_news_date" data-dojo-type="dijit/form/DateTextBox" constraints="{datePattern:'yyyy-MM-dd', strict:true}">
+        <input id="page_news_time" data-dojo-type="dijit/form/TimeTextBox" constraints="{timePattern: 'HH:mm', strict:true}">
+      </td>
+    </tr>
+  </table>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+  function onpage_data_load() {
+    var value = page_data_get("news_date");
+
+    if(value) {
+      var val_date = value.split(/[T ]/)[0];
+      var val_time = value.split(/[T ]/)[1].split(/:/);
+      console.log(">> " + val_date);
+      console.log(">> " + val_time);
+      
+      $GLOBAL.registry.byId("page_news_date").set("value", val_date);
+      $GLOBAL.registry.byId("page_news_time").set("value", new Date(0, 0, 0, val_time[0], val_time[1], 0));
+    }
+  }
+
+  function onpage_data_save() {
+    if($GLOBAL.registry.byId("page_news_date").get("displayedValue")) {
+      var news_date;
+      news_date = $GLOBAL.registry.byId("page_news_date").get("displayedValue");
+      if($GLOBAL.registry.byId("page_news_time").get("displayedValue")) {
+        news_date += " " + $GLOBAL.registry.byId("page_news_time").get("displayedValue");
+      }
+      else {
+        news_date += " 00:00";
+      }
+
+      page_data_set("news_date", news_date);
+    }
+  }
+</script>

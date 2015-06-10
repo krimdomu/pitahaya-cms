@@ -1,0 +1,26 @@
+<!--
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Event'">
+  <input id="page_data_foo" name="myfoo" data-dojo-type="dijit/form/TextBox">
+</div>
+
+<div data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Teaser'">
+</div>
+
+
+<script type="application/javascript">
+/*
+function onpage_data_load(data) {
+  if(typeof data["foo"] != "undefined") {
+    $GLOBAL.registry.byId("page_data_foo").set("value", data["foo"]);
+  }
+}
+
+function onpage_data_unload() {
+}
+
+function onpage_data_save() {
+  page_data_set("foo", $GLOBAL.registry.byId("page_data_foo").get("value"));
+}
+*/
+</script>
+-->

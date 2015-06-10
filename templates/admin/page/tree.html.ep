@@ -1,0 +1,8 @@
+<div data-dojo-type="dijit/layout/AccordionContainer">
+  <div data-dojo-type="dijit/layout/ContentPane" title="Pages">
+    <div id="pageTree"></div>
+  </div>
+  <div data-dojo-type="dijit/layout/ContentPane" title="Media Files">
+    <div id="mediaTree"></div>
+  </div>
+</div>
