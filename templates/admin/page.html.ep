@@ -128,9 +128,9 @@
     tinymce.init({
       selector: "#page_content",
       content_css: "/css/skin/<%= $site->skin %>/admin/editor.css",
-      toolbar: [ "undo redo | styleselect | bold italic | link image | table" ],
+      toolbar: [ "undo redo | styleselect | bold italic | bullist numlist | link image | table | removeformat" ],
       menubar: false,
-      plugins: "link image table",
+      plugins: "link image table lists",
       file_browser_callback: function(field_name, url, type, win) {
         //win.document.getElementById(field_name).value = "foo bar baz";
         page_select_dialog.show();
@@ -141,6 +141,12 @@
       link_class_list: [
         {title: "None", value: ""},
         {title: "Button", value: "btn"},
+      ],
+      style_formats_merge: true,
+      style_formats: [
+        {title: "Code Highlight", items: [
+          {title: 'Perl Code', inline: 'code', classes: 'perl'}
+          ]}
       ]
     });
 
