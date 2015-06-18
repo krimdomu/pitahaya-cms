@@ -82,6 +82,29 @@ sub export {
   }
 
   {
+    my $skin_dir = File::Spec->catdir("templates", "skin", $site_o->skin );
+    my $skin_export_dir = File::Spec->catdir($export_to, "templates", "skin", $site_o->skin);
+
+    my $layout_dir = File::Spec->catdir("templates", "layouts", $site_o->skin );
+    my $layout_export_dir = File::Spec->catdir($export_to, "templates", "skin", $site_o->skin);
+
+    make_path($skin_export_dir);
+    make_path($layout_export_dir);
+
+    dircopy($skin_dir, $skin_export_dir);
+    dircopy($layout_dir, $layout_export_dir);
+  }
+
+  {
+    my $site_dir = File::Spec->catdir("vendor", "site", $site_o->name );
+    my $site_export_dir = File::Spec->catdir($export_to, "vendor", "site", $site_o->name);
+
+    make_path($site_export_dir);
+
+    dircopy($site_dir, $site_export_dir);
+  }
+
+  {
     local $CWD = $export_to;
     system "tar czf ../$time.tar.gz *";
   }

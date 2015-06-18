@@ -88,6 +88,7 @@ sub startup {
 
     $admin_r->get('/export')->to('admin-export#export');
 
+    $admin_r->get('/dialog/select_page_or_media')->to('admin-dialog#select_page_or_media');
 
     $admin_r->get('/page/tree/')->to( 'admin#page_tree', node => 'root' );
     $admin_r->get('/page/tree/:node')->to('admin#page_tree');

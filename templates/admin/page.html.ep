@@ -133,9 +133,12 @@
       plugins: "link image table lists",
       file_browser_callback: function(field_name, url, type, win) {
         //win.document.getElementById(field_name).value = "foo bar baz";
-        page_select_dialog.show();
-        document.getElementById("page_select_dialog").style.zIndex = 100000;
-        $GLOBAL['page_select_dialog_field'] = field_name;
+        //page_select_dialog.show();
+        //document.getElementById("page_select_dialog").style.zIndex = 100000;
+        //$GLOBAL['page_select_dialog_field'] = field_name;
+        dialog_select_PageOrMedia(function(sel) {
+          document.getElementById(field_name).value = sel;
+        });
       },
       link_list: true,
       link_class_list: [
@@ -159,80 +162,7 @@
     });
 
 
-    if(typeof $GLOBAL['linkPageTree'] == "undefined") {
 
-      $GLOBAL['linkPageTree'] = $('#linkPageTree').jstree({
-        core: {
-          check_callback: true,
-          data: {
-            url: function(node) {
-              if(node.id === '#') {
-                return "./page/tree";
-              }
-              else {
-                return "./page/tree/children/" + node.id;
-              }
-            }
-          }
-        }
-      });
-
-      $GLOBAL.linkPageTree.on("changed.jstree", function(e, data) {
-        var item = data.instance.get_node(data.selected[0]);
-
-        var xpath = data.instance.get_path(item, "/", true).split("/");
-        xpath.shift();
-
-        var url = new Array();
-        for( var p in xpath ) {
-          if(xpath.hasOwnProperty(p)) {
-            var item_data = data.instance.get_node(xpath[p]).data;
-            url.push(item_data.url);
-          }
-        }
-
-        document.getElementById($GLOBAL['page_select_dialog_field']).value = "/" + url.join("/") + ".html";
-      });
-
-    }
-
-    if(typeof $GLOBAL['imgMediaTree'] == "undefined") {
-
-      $GLOBAL['imgMediaTree'] = $('#imgMediaTree').jstree({
-        core: {
-          check_callback: true,
-          data: {
-            url: function(node) {
-              if(node.id === '#') {
-                return "./media/tree";
-              }
-              else {
-                return "./media/tree/children/" + node.id;
-              }
-            }
-          }
-        }
-      });
-
-      $GLOBAL.imgMediaTree.on("changed.jstree", function(e, data) {
-        var item = data.instance.get_node(data.selected[0]);
-        //var url_field = self._uniqueId + "_urlInput";
-
-        var xpath = data.instance.get_path(item, "/", true).split("/");
-        xpath.shift();
-
-        var url = new Array();
-        for( var p in xpath ) {
-          if(xpath.hasOwnProperty(p)) {
-            var item_data = data.instance.get_node(xpath[p]).data;
-            url.push(item_data.url);
-          }
-        }
-
-        document.getElementById($GLOBAL['page_select_dialog_field']).value = "/media/" + url.join("/");
-      });
-
-    }
   }
 
   function onpage_save() {
@@ -245,49 +175,3 @@
   }
 </script>
 
-
-<div data-dojo-type="dijit/Dialog" data-dojo-id="page_select_dialog" id="page_select_dialog" title="Select Page" style="z-index: 100000;">
-
-
-  <div id="page_select_Layout" class="appLayout"
-    data-dojo-type="dijit/layout/BorderContainer"
-    data-dojo-props="design: 'headline'"
-    style="width: 850px; height: 550px"
-    >
-    <div id="page_select_main_area" class="centerPanel"
-      data-dojo-type="dojox/layout/ContentPane"
-      data-dojo-props="region: 'center'"
-      >
-    </div>
-
-
-    <div id="page_select_leftCol" class="edgePanel"
-      data-dojo-type="dijit/layout/ContentPane"
-      data-dojo-props="region: 'left', splitter: true"
-      style="width: 250px;">
-
-      <div data-dojo-type="dijit/layout/AccordionContainer">
-        <div data-dojo-type="dijit/layout/ContentPane" title="Pages">
-          <div id="linkPageTree"></div>
-        </div>
-        <div data-dojo-type="dijit/layout/ContentPane" title="Media Files">
-          <div id="imgMediaTree"></div>
-        </div>
-      </div>
-
-    </div>
-
-
-    <div id="page_select_Bottom" class="dijitDialogPaneActionBar"
-      data-dojo-type="dijit/layout/ContentPane"
-      data-dojo-props="region: 'bottom'">
-
-      <button data-dojo-type="dijit/form/Button" type="submit" id="select_page_ok">OK</button>
-      <button data-dojo-type="dijit/form/Button" type="button" data-dojo-props="" id="select_page_cancel">Cancel</button>
-
-  </div>
-
-      <!--
-  -->
-
-</div>

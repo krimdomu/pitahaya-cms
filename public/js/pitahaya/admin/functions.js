@@ -1,5 +1,3 @@
-var $GLOBAL = {};
-
 /******************************************************************************/
 // Tree functions
 /******************************************************************************/
@@ -117,4 +115,106 @@ function logout() {
   $GLOBAL.cookie("mojolicious", "", {"expires": -1});
   document.location.href = "/admin/login";
 }
+
+
+/**
+ * FUNCTION: dialog_select_PageOrMedia()
+ *
+ * RETURNS: void
+ *
+ * Display a dialog to select a page or media.
+ */
+var selected_thing;
+function dialog_select_PageOrMedia(cb) {
+
+  $GLOBAL.dialog.select_page_or_media.onExecute = function() {
+    cb(selected_thing);
+    $GLOBAL.dialog.select_page_or_media.hide();
+  };
+
+  $GLOBAL.dialog.select_page_or_media.show().then(function() {
+  
+    if(typeof $GLOBAL['linkPageTree'] == "undefined") {
+
+      $GLOBAL['linkPageTree'] = $('#linkPageTree').jstree({
+        core: {
+          check_callback: true,
+          data: {
+            url: function(node) {
+              if(node.id === '#') {
+                return "./page/tree";
+              }
+              else {
+                return "./page/tree/children/" + node.id;
+              }
+            }
+          }
+        }
+      });
+
+      $GLOBAL.linkPageTree.on("changed.jstree", function(e, data) {
+        var item = data.instance.get_node(data.selected[0]);
+
+        var xpath = data.instance.get_path(item, "/", true).split("/");
+        xpath.shift();
+
+        var url = new Array();
+        for( var p in xpath ) {
+          if(xpath.hasOwnProperty(p)) {
+            var item_data = data.instance.get_node(xpath[p]).data;
+            url.push(item_data.url);
+          }
+        }
+
+        selected_thing = "/" + url.join("/") + ".html";
+        //document.getElementById($GLOBAL['page_select_dialog_field']).value = "/" + url.join("/") + ".html";
+      });
+
+    }
+
+
+    if(typeof $GLOBAL['imgMediaTree'] == "undefined") {
+
+      $GLOBAL['imgMediaTree'] = $('#imgMediaTree').jstree({
+        core: {
+          check_callback: true,
+          data: {
+            url: function(node) {
+              if(node.id === '#') {
+                return "./media/tree";
+              }
+              else {
+                return "./media/tree/children/" + node.id;
+              }
+            }
+          }
+        }
+      });
+
+      $GLOBAL.imgMediaTree.on("changed.jstree", function(e, data) {
+        var item = data.instance.get_node(data.selected[0]);
+        //var url_field = self._uniqueId + "_urlInput";
+
+        var xpath = data.instance.get_path(item, "/", true).split("/");
+        xpath.shift();
+
+        var url = new Array();
+        for( var p in xpath ) {
+          if(xpath.hasOwnProperty(p)) {
+            var item_data = data.instance.get_node(xpath[p]).data;
+            url.push(item_data.url);
+          }
+        }
+
+        selected_thing = "/media/" + url.join("/");
+        //document.getElementById($GLOBAL['page_select_dialog_field']).value = "/media/" + url.join("/");
+      });
+
+    }
+
+  });
+
+  document.getElementById("select_PageOrMedia").style.zIndex = 100000;
+}
+
 

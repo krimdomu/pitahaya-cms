@@ -1,3 +1,7 @@
+var $GLOBAL = {
+  'dialog': {}
+};
+
 function fill_form_elements(ref, cb) {
   for(var key in ref) {
     cb(key, ref[key]);
@@ -55,6 +59,13 @@ require([
         $.notify("Site exported.", "success");
       });
     });
+
+    $GLOBAL['dialog']['select_page_or_media'] = new dijit.Dialog({
+      id: 'select_PageOrMedia',
+      title: 'Select Page or Media',
+      href: './dialog/select_page_or_media'
+    });
+
   });
 
 });
