@@ -61,12 +61,15 @@ sub run {
   }
 
   if ( $command eq "config" ) {
-    my ( $db_host, $db_schema, $db_user, $db_pass );
+    my ( $db_host, $db_schema, $db_user, $db_pass, $search_host,
+      $search_index );
     GetOptionsFromArray \@args,
-      'h|host=s'     => sub { $db_host   = $_[1] },
-      's|schema=s'   => sub { $db_schema = $_[1] },
-      'u|user=s'     => sub { $db_user   = $_[1] },
-      'p|password=s' => sub { $db_pass   = $_[1] };
+      'h|host=s'         => sub { $db_host      = $_[1] },
+      's|schema=s'       => sub { $db_schema    = $_[1] },
+      'u|user=s'         => sub { $db_user      = $_[1] },
+      'p|password=s'     => sub { $db_pass      = $_[1] },
+      'f|search_host=s'  => sub { $search_host  = $_[1] },
+      'i|search_index=s' => sub { $search_index = $_[1] };
 
     if ( !$db_host ) {
       $self->app->log->error("You have to specify the database host");
@@ -88,6 +91,16 @@ sub run {
       exit 1;
     }
 
+    if ( !$search_host ) {
+      $self->app->log->error("You have to specify the search host");
+      exit 1;
+    }
+
+    if ( !$search_index ) {
+      $self->app->log->error("You have to specify the search index");
+      exit 1;
+    }
+
     open( my $fh, ">", "pitahaya.conf" )
       or die("Can't write pitahaya.conf: $!");
     print $fh qq~
@@ -105,7 +118,13 @@ sub run {
   },
   export => {
     dir => "./export",
-  }
+  },
+  search => {
+    sphinx => {
+      host  => "$search_host",
+      index => "$search_index",
+    },
+  },
 }
 ~;
 
@@ -128,19 +147,27 @@ sub run {
     make_path "$project/data";
     make_path "$project/export";
 
-    symlink "$FindBin::Bin/$FindBin::Script", "$project/bin/" . $FindBin::Script;
+    symlink "$FindBin::Bin/$FindBin::Script",
+      "$project/bin/" . $FindBin::Script;
 
     $self->app->log->info("New Pitahaya project created.");
-    $self->app->log->info("You can now start with your project by switchting to $project directory.");
-    $self->app->log->info("Please create a configuration and initialize the database.");
+    $self->app->log->info(
+      "You can now start with your project by switchting to $project directory."
+    );
+    $self->app->log->info(
+      "Please create a configuration and initialize the database.");
     $self->app->log->info("");
     $self->app->log->info("To create a configuration file use:");
-    $self->app->log->info("  bin/pitahaya admin config --host db_host --schema db_schema --user db_user --password db_pass");
+    $self->app->log->info(
+      "  bin/pitahaya admin config --host db_host --schema db_schema --user db_user --password db_pass"
+    );
     $self->app->log->info("To initialize the database use:");
     $self->app->log->info("  bin/pitahaya admin db --init");
     $self->app->log->info("");
     $self->app->log->info("To create a new site use:");
-    $self->app->log->info("  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name");
+    $self->app->log->info(
+      "  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name"
+    );
   }
 
   if ( $command eq "db" ) {
@@ -177,7 +204,9 @@ sub run {
     $self->app->log->info("To continue you have to create a new site.");
     $self->app->log->info("");
     $self->app->log->info("To create a new site use:");
-    $self->app->log->info("  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name");
+    $self->app->log->info(
+      "  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name"
+    );
   }
 
   if ( $command eq "site" ) {
@@ -287,11 +316,15 @@ sub run {
       }
 
       $self->app->log->info("");
-      $self->app->log->info("Your new site is now created. You can start the application server and login to the adminarea now.");
+      $self->app->log->info(
+        "Your new site is now created. You can start the application server and login to the adminarea now."
+      );
       $self->app->log->info("To start the application server use:");
       $self->app->log->info("  bin/pitahaya daemon");
       $self->app->log->info("");
-      $self->app->log->info("To log into the adminarea point your browser to http://localhost:3000/admin/login");
+      $self->app->log->info(
+        "To log into the adminarea point your browser to http://localhost:3000/admin/login"
+      );
       $self->app->log->info("  User     : admin");
       $self->app->log->info("  Password : admin");
     }

@@ -53,7 +53,7 @@ sub startup {
     $self->plugin(
       "database",
       {
-        dsn    => "DBI:mysql:database=cms;host=172.17.42.1;port=9306",
+        dsn    => "DBI:mysql:database=" . $self->config->{search}->{sphinx}->{index} . ";host=" . $self->config->{search}->{sphinx}->{host} . ";port=9306",
         helper => "sphinx",
       }
     );
