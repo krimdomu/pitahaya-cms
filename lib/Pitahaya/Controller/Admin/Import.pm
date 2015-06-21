@@ -125,6 +125,19 @@ sub import_into_site {
     }
   }
 
+  {
+    remove_tree(File::Spec->catfile("public", "css", "skin", $site_o->skin));
+    remove_tree(File::Spec->catfile("public", "images", "skin", $site_o->skin));
+    remove_tree(File::Spec->catfile("public", "js", "skin", $site_o->skin));
+
+    my @public_files = grep { m/^public\// } $tar->list_files;
+    for my $public_file (@public_files) {
+      my $to = $public_file;
+      $self->app->log->debug("Extracting: $public_file -> $to");
+      $tar->extract_file($public_file, $to);
+    }
+  }
+
   remove_tree $media_dir;
   rename "$media_dir.tmp", $media_dir;
 

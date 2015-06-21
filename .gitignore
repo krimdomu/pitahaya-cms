@@ -24,6 +24,3 @@ screencasts
 vars.db
 vars.db.lock
 tmp
-data
-export
-local

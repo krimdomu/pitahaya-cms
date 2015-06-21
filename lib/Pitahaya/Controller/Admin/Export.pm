@@ -105,6 +105,33 @@ sub export {
   }
 
   {
+    my $public_css_dir = File::Spec->catdir("public", "css", "skin", $site_o->skin );
+    my $public_css_export_dir = File::Spec->catdir($export_to, "public", "css", "skin", $site_o->skin);
+
+    make_path($public_css_export_dir);
+
+    dircopy($public_css_dir, $public_css_export_dir);
+  }
+
+  {
+    my $public_img_dir = File::Spec->catdir("public", "images", "skin", $site_o->skin );
+    my $public_img_export_dir = File::Spec->catdir($export_to, "public", "images", "skin", $site_o->skin);
+
+    make_path($public_img_export_dir);
+
+    dircopy($public_img_dir, $public_img_export_dir);
+  }
+
+  {
+    my $public_js_dir = File::Spec->catdir("public", "js", "skin", $site_o->skin );
+    my $public_js_export_dir = File::Spec->catdir($export_to, "public", "js", "skin", $site_o->skin);
+
+    make_path($public_js_export_dir);
+
+    dircopy($public_js_dir, $public_js_export_dir);
+  }
+
+  {
     local $CWD = $export_to;
     system "tar czf ../$time.tar.gz *";
   }
