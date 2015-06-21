@@ -8,6 +8,8 @@ use File::Spec;
 use File::Path qw(make_path remove_tree);
 use UUID 'uuid';
 use Mojo::JSON 'decode_json', 'encode_json';
+use FindBin;
+use Cwd 'realpath';
 
 sub check_login {
   my ($self) = @_;
@@ -36,8 +38,7 @@ sub login_POST {
   my $ref  = $self->req->json;
   if ($ref) {
     if ( $self->authenticate( $ref->{username}, $ref->{password} ) ) {
-      return $self->render(
-        json => { ok => Mojo::JSON->true } );
+      return $self->render( json => { ok => Mojo::JSON->true } );
     }
     else {
       return $self->render(
@@ -300,8 +301,8 @@ sub page_GET {
   # check if we have a base type to load
   if ( !-f $inc_path ) {
     $inc_path =
-      File::Spec->catfile( "vendor", "site", "base", "Admin",
-      ucfirst($type) . ".pm" );
+      File::Spec->catfile( $FindBin::RealBin, "..", "vendor", "site", "base",
+      "Admin", ucfirst($type) . ".pm" );
   }
 
   if ( -f $inc_path ) {
@@ -695,7 +696,12 @@ sub _load_extra_info {
       "info" );
     $self->app->log->debug(
       "Looking for info extension in base: $base_info_html.html.ep");
-    if ( -f File::Spec->catfile( "templates", "$base_info_html.html.ep" ) ) {
+    if (
+      -f File::Spec->catfile(
+        $FindBin::RealBin, "..", "templates", "$base_info_html.html.ep"
+      )
+      )
+    {
       $self->stash( "info_page", $self->render_to_string($base_info_html) );
     }
   }
@@ -716,7 +722,12 @@ sub _load_extra_tabs {
       "tabs" );
     $self->app->log->debug(
       "Looking for tabs extension in base: $base_tabs_html.html.ep");
-    if ( -f File::Spec->catfile( "templates", "$base_tabs_html.html.ep" ) ) {
+    if (
+      -f File::Spec->catfile(
+        $FindBin::RealBin, "..", "templates", "$base_tabs_html.html.ep"
+      )
+      )
+    {
       $self->stash( "custom_tabs", $self->render_to_string($base_tabs_html) );
     }
   }

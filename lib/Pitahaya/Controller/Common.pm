@@ -1,6 +1,7 @@
 package Pitahaya::Controller::Common;
 use Mojo::Base 'Mojolicious::Controller';
 use FindBin;
+use Cwd 'realpath';
 
 use Data::Dumper;
 
@@ -10,11 +11,10 @@ sub prepare {
   my $site_o = $self->db->resultset("Site")->find(1);
   $self->stash( site => $site_o );
 
-
   my $url = $self->req->url->path;
 
-  $self->app->log->debug("Complete request: " . $self->req->url);
-  $self->app->log->debug("Request path: " . $self->req->url->path);
+  $self->app->log->debug( "Complete request: " . $self->req->url );
+  $self->app->log->debug( "Request path: " . $self->req->url->path );
 
   # media link
   if ( $url =~ m/^\/media\// ) {
@@ -23,7 +23,8 @@ sub prepare {
 
     my $media_o = $site_o->get_media_by_url($_url);
     if ( !$media_o ) {
-      $self->app->log->error( "Requested media not found: " . $self->req->url->path );
+      $self->app->log->error(
+        "Requested media not found: " . $self->req->url->path );
       $self->reply->not_found();
       return 0;
     }
@@ -100,7 +101,8 @@ sub page {
   # check if we have a base type
   if ( !-f $inc_path ) {
     $inc_path =
-      File::Spec->catfile( $FindBin::Bin, "..", "vendor", "site", "base", ucfirst($type) . ".pm" );
+      File::Spec->catfile( $FindBin::RealBin, "..", "vendor", "site",
+      "base", ucfirst($type) . ".pm" );
   }
 
   if ( -f $inc_path ) {
