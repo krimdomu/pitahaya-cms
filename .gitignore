@@ -26,3 +26,4 @@ vars.db.lock
 tmp
 data
 export
+local
