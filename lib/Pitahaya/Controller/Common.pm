@@ -1,5 +1,6 @@
 package Pitahaya::Controller::Common;
 use Mojo::Base 'Mojolicious::Controller';
+use FindBin;
 
 use Data::Dumper;
 
@@ -99,7 +100,7 @@ sub page {
   # check if we have a base type
   if ( !-f $inc_path ) {
     $inc_path =
-      File::Spec->catfile( "vendor", "site", "base", ucfirst($type) . ".pm" );
+      File::Spec->catfile( $FindBin::Bin, "..", "vendor", "site", "base", ucfirst($type) . ".pm" );
   }
 
   if ( -f $inc_path ) {
