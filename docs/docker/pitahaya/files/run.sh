@@ -20,7 +20,7 @@ else
   /usr/share/pitahaya/bin/pitahaya admin project --name instance1
 
   cd instance1
-  bin/pitahaya admin config --host $DB_HOST --schema $DB_SCHEMA --user $DB_USER --password $DB_PASSWORD
+  bin/pitahaya admin config --host $DB_HOST --schema $DB_SCHEMA --user $DB_USER --password $DB_PASSWORD --search_host $SEARCH_HOST --search_index $SEARCH_INDEX
   bin/pitahaya admin db --init
 
   bin/pitahaya admin site --create --name $SITE_NAME --skin $SITE_NAME
