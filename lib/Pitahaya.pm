@@ -87,6 +87,7 @@ sub startup {
     $admin_r->get('/')->to('admin#index');
 
     $admin_r->get('/export')->to('admin-export#export');
+    $admin_r->post('/import')->to('admin-import#import_into_site');
 
     $admin_r->get('/dialog/select_page_or_media')->to('admin-dialog#select_page_or_media');
 

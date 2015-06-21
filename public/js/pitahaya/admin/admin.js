@@ -60,6 +60,22 @@ require([
       });
     });
 
+    on(registry.byId("admin_import"), "Click", function(evt) {
+        dialog_select_PageOrMedia(function(sel) {
+          request.post("./import", {
+            data: $GLOBAL.json.stringify({ "file": sel }),
+            timeout: 500000,
+            headers: {
+              "Accept": "application/json",
+              "Content-Type": "application/json"
+            },
+            handleAs: "json"
+          }).then(function(data) {
+            $.notify("Site imported. Please refresh browser.", "success");
+          });
+        });
+    });
+
     $GLOBAL['dialog']['select_page_or_media'] = new dijit.Dialog({
       id: 'select_PageOrMedia',
       title: 'Select Page or Media',

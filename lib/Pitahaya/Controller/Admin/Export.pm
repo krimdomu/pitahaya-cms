@@ -85,8 +85,8 @@ sub export {
     my $skin_dir = File::Spec->catdir("templates", "skin", $site_o->skin );
     my $skin_export_dir = File::Spec->catdir($export_to, "templates", "skin", $site_o->skin);
 
-    my $layout_dir = File::Spec->catdir("templates", "layouts", $site_o->skin );
-    my $layout_export_dir = File::Spec->catdir($export_to, "templates", "skin", $site_o->skin);
+    my $layout_dir = File::Spec->catdir("templates", "layouts", "skin", $site_o->skin );
+    my $layout_export_dir = File::Spec->catdir($export_to, "templates", "layouts", "skin", $site_o->skin);
 
     make_path($skin_export_dir);
     make_path($layout_export_dir);
