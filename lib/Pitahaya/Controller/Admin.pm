@@ -14,6 +14,10 @@ use Cwd 'realpath';
 sub check_login {
   my ($self) = @_;
 
+  if($self->is_user_authenticated) {
+    $self->app->log->debug("User is authenticated.");
+  }
+
   $self->stash( is_logged_in => $self->is_user_authenticated );
   $self->redirect_to("/admin/login") and return 0
     unless ( $self->is_user_authenticated );
@@ -331,7 +335,13 @@ sub page_GET {
 sub page_PUT {
   my $self = shift;
 
+  $self->app->log->debug("Updating page: " . $self->param("page_id"));
+
   my $page_o = $self->stash("site")->get_page( $self->param("page_id") );
+
+  $self->app->log->debug("Got page: " . $page_o->name . " (" . $page_o->id . ")");
+  
+
   my $ref    = $self->req->json;
   if ($ref) {
     $page_o->secure_update($ref);
@@ -343,7 +353,7 @@ sub page_PUT {
         id   => $page_o->id,
         children =>
           ( $page_o->is_branch ? Mojo::JSON->true : Mojo::JSON->false ),
-        parent => $page_o->parent->id,
+        parent => ($page_o->level > 0 ? $page_o->parent->id : undef),
         icon   => $self->_get_page_tree_icon($page_o),
       }
     );

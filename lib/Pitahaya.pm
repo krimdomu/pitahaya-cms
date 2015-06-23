@@ -63,11 +63,13 @@ sub startup {
         session_key   => $self->config->{session}->{key},
         load_user     => sub {
           my ( $app, $uid ) = @_;
+          $self->app->log->debug("Loading user: $uid");
           my $user_o = $app->get_user($uid);
           return $user_o;    # user objekt
         },
         validate_user => sub {
           my ( $app, $username, $password ) = @_;
+          $self->app->log->debug("Validateing user: $username -> $password");
           return $app->check_password( $username, $password );
         },
       }
