@@ -34,7 +34,8 @@ sub prepare {
     my $page_o = $site_o->get_page_by_url( $self->req->url->path );
     if ( !$page_o ) {
       $self->app->log->error( "Requested page not found: " . $self->req->url );
-      $self->reply->not_found();
+      my $site_inc_o = $self->_get_site_inc($self->stash("site"));
+      $site_inc_o->page_not_found();
       return 0;
     }
     $self->stash( page => $page_o );
@@ -79,18 +80,8 @@ sub page {
   my $type      = $page_o->type->name;
   my $site_name = $self->stash("site")->name;
 
-  my $site_inc_path =
-    File::Spec->catfile( "vendor", "site", $site_name, "Site.pm" );
-
-  if ( -f $site_inc_path ) {
-    $self->app->log->debug("Loading site: -> $site_inc_path");
-    require $site_inc_path;
-    my $site_inc_class = "Site";
-    my $site_inc_o     = $site_inc_class->new(
-      site       => $self->stash("site"),
-      page       => $self->stash("page"),
-      controller => $self
-    );
+  my $site_inc_o = $self->_get_site_inc($self->stash("site"), $page_o);
+  if($site_inc_o) { 
     my $site_meth = $self->req->method;
     $site_inc_o->$site_meth();
   }
@@ -119,6 +110,25 @@ sub page {
   }
 
   $self->render("skin/$skin/$type");
+}
+
+sub _get_site_inc {
+  my ($self, $site_o, $page_o) = @_; 
+
+  my $site_inc_path =
+    File::Spec->catfile( "vendor", "site", $site_o->name, "Site.pm" );
+
+  if ( -f $site_inc_path ) {
+    $self->app->log->debug("Loading site: -> $site_inc_path");
+    require $site_inc_path;
+    my $site_inc_class = "Site";
+    my $site_inc_o     = $site_inc_class->new(
+      site       => $site_o,
+      page       => $page_o,
+      controller => $self
+    );
+    return $site_inc_o;
+  }
 }
 
 1;
