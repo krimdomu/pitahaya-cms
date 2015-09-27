@@ -6,6 +6,7 @@ export PATH=/usr/share/pitahaya/local/bin:$PATH
 function start_cms() {
   
   cd /var/lib/pitahaya/instance1
+  bin/pitahaya admin db --update
 
   hypnotoad -f bin/pitahaya
 
