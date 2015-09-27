@@ -8,6 +8,7 @@ use Data::Dumper;
 sub prepare {
   my $self = shift;
 
+  # TODO: detect vhost
   my $site_o = $self->db->resultset("Site")->find(1);
   $self->stash( site => $site_o );
 
