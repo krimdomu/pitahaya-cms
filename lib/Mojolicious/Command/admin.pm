@@ -232,15 +232,19 @@ Commandas for pitahaya admin:
       unless $dh->schema_version =~ /^\d+$/;
     if ($init) {
       install();
-    }
 
-    $self->app->log->info("Database initialize. This database is empty.");
-    $self->app->log->info("To continue you have to create a new site.");
-    $self->app->log->info("");
-    $self->app->log->info("To create a new site use:");
-    $self->app->log->info(
-      "  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name"
-    );
+      $self->app->log->info("Database initialize. This database is empty.");
+      $self->app->log->info("To continue you have to create a new site.");
+      $self->app->log->info("");
+      $self->app->log->info("To create a new site use:");
+      $self->app->log->info(
+        "  bin/pitahaya admin site --create --name your-site-name --skin your-skin-name"
+      );
+    }
+    
+    if($update) {
+      upgrade();
+    }
   }
 
   if ( $command eq "site" ) {
