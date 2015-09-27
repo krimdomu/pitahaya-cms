@@ -25,6 +25,8 @@ has schema => sub {
 sub startup {
   my $self = shift;
 
+  $self->log->path(getcwd() . "/log/pitahaya.log");
+
   #######################################################################
   # Define some custom helpers
   #######################################################################
