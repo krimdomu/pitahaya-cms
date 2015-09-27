@@ -18,6 +18,40 @@ my ( $dh, $from_version, $to_version, $version );
 
 sub run {
   my ( $self, $command, @args ) = @_;
+  
+  if(! $command || $command eq "help") {
+    print q|
+Commandas for pitahaya admin:
+  project                         create a new project
+    --name project_name
+    
+  config                          create an initial configuration
+    --host db_host
+    --schema db_name
+    --user db_user
+    --password db_password
+    --search_host search_host
+    --search_index search_index
+    
+  db                              manage the database
+    --init                        initialize the tables
+    --update                      update schema to a new version
+    
+  site                            manage sites
+    --create                      create anew site
+      --name site_name
+      --skin skin_name
+      
+  page_type                       manage page types
+    --create                      create a new page type
+      --site site_name
+      --type type_name
+      [--description desc]
+    |;
+    print "\n";
+    
+    return;
+  }
 
   if ( $command eq "page_type" ) {
     my ( $name, $site, $desc, $create );
