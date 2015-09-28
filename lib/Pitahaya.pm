@@ -57,6 +57,7 @@ sub startup {
       {
         dsn    => "DBI:mysql:database=" . $self->config->{search}->{sphinx}->{index} . ";host=" . $self->config->{search}->{sphinx}->{host} . ";port=9306",
         helper => "sphinx",
+        options => { mysql_auto_reconnect => 1 },
       }
     );
     $self->plugin(
