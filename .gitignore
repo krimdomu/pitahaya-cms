@@ -24,3 +24,4 @@ screencasts
 vars.db
 vars.db.lock
 tmp
+local

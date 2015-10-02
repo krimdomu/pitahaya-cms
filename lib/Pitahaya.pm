@@ -21,6 +21,8 @@ has schema => sub {
   );
 };
 
+our $VERSION = "0.1.4";
+
 # This method will run once at server start
 sub startup {
   my $self = shift;
@@ -134,6 +136,9 @@ sub startup {
     $admin_r->put('/user/:user_id')->to('admin-user#user_PUT');
     $admin_r->post('/user')->to('admin-user#user_POST');
     $admin_r->delete('/user/:user_id')->to('admin-user#user_DELETE');
+
+    $admin_r->get('/desktop/:desktop_action')->to('admin-desktop#action_GET');
+
 
     # Normal route to controller
     my $cms_r = $r->under('/')->to('common#prepare');

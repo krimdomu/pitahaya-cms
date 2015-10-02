@@ -1,6 +1,6 @@
 FROM jfried/perl:latest
 
-ENV PITAHAYA_VERSION 0.1.2
+ENV PITAHAYA_VERSION 0.1.3
 
 EXPOSE 8080
 VOLUME ["/var/lib/pitahaya"]

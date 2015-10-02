@@ -283,6 +283,9 @@ sub page_DELETE {
   my $page_o = $self->stash("site")->get_page( $self->param("page_id") );
   if ($page_o) {
     $page_o->delete;
+    
+    $self->_execute_action("DELETE", "page_DELETE");
+    
     return $self->render( json => { ok => Mojo::JSON->true } );
   }
 
@@ -298,29 +301,7 @@ sub page_GET {
   my $type      = $page_o->type->name;
   my $site_name = $self->stash("site")->name;
 
-  my $inc_path =
-    File::Spec->catfile( "vendor", "site", $site_name, "Admin",
-    ucfirst($type) . ".pm" );
-
-  # check if we have a base type to load
-  if ( !-f $inc_path ) {
-    $inc_path =
-      File::Spec->catfile( $FindBin::RealBin, "..", "vendor", "site", "base",
-      "Admin", ucfirst($type) . ".pm" );
-  }
-
-  if ( -f $inc_path ) {
-    $self->app->log->debug("Loading admin pagetype: $type -> $inc_path");
-    require $inc_path;
-    my $inc_class = "Admin::" . ucfirst($type);
-
-    my $inc_o = $inc_class->new(
-      site       => $self->stash("site"),
-      page       => $self->stash("page"),
-      controller => $self
-    );
-    $inc_o->GET();
-  }
+  $self->_execute_action("GET", "page_GET");
 
   # check for info.html.ep and tabs.html.ep
   $self->_load_extra_info($page_o);
@@ -345,7 +326,9 @@ sub page_PUT {
   my $ref    = $self->req->json;
   if ($ref) {
     $page_o->secure_update($ref);
-
+    
+    $self->_execute_action("PUT", "page_PUT");
+    
     return $self->render(
       json => {
         name => $page_o->name,
@@ -387,6 +370,8 @@ sub page_POST {
     $ref->{creator_id} = $self->current_user->id;
 
     my $new_page = $page_o->secure_add_to_children($ref);
+    
+    $self->_execute_action("POST", "page_POST");
 
     $self->res->headers->location( "/page/" . $new_page->id );
 
@@ -742,5 +727,64 @@ sub _load_extra_tabs {
     }
   }
 }
+
+sub _execute_action {
+  my ($self, $action, $admin_action) = @_;
+  
+  my $page_o = $self->stash("page");
+  my $site_o = $self->stash("site");
+  
+  my $type   = $page_o->type->name;
+
+  my $inc_path =
+    File::Spec->catfile( "vendor", "site", $site_o->name, "Admin",
+    ucfirst($type) . ".pm" );
+
+  # check if we have a base type to load
+  if ( !-f $inc_path ) {
+    $inc_path =
+      File::Spec->catfile( $FindBin::RealBin, "..", "vendor", "site", "base",
+      "Admin", ucfirst($type) . ".pm" );
+  }
+
+  if ( -f $inc_path ) {
+    $self->app->log->debug("Loading admin pagetype: $type -> $inc_path");
+    require $inc_path;
+    my $inc_class = "Admin::" . ucfirst($type);
+
+    my $inc_o = $inc_class->new(
+      site       => $self->stash("site"),
+      page       => $self->stash("page"),
+      controller => $self
+    );
+    $inc_o->$action();
+  }
+  
+  my $site_inc_o = $self->_get_site_admin_inc($self->stash("site"), $page_o);
+  if($site_inc_o->can($admin_action)) {
+    $site_inc_o->$admin_action();
+  }
+
+}
+
+sub _get_site_admin_inc {
+  my ($self, $site_o, $page_o) = @_; 
+
+  my $site_inc_path =
+    File::Spec->catfile( "vendor", "site", $site_o->name, "Admin.pm" );
+
+  if ( -f $site_inc_path ) {
+    $self->app->log->debug("Loading site: -> $site_inc_path");
+    require $site_inc_path;
+    my $site_inc_class = "Admin";
+    my $site_inc_o     = $site_inc_class->new(
+      site       => $site_o,
+      page       => $page_o,
+      controller => $self
+    );
+    return $site_inc_o;
+  }
+}
+
 
 1;

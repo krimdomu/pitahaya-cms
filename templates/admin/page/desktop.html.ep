@@ -1,1 +1,5 @@
-this is desktop!
+% for my $widget (@{ $desktop_widgets }) {
+<div style="float: left; width: 400px;">
+%= $widget
+</div>
+% }

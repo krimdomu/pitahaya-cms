@@ -217,4 +217,33 @@ function dialog_select_PageOrMedia(cb) {
   document.getElementById("select_PageOrMedia").style.zIndex = 100000;
 }
 
+/**
+ * FUNCTION: desktop_action()
+ *
+ * RETURNS: void
+ *
+ * Calls a desktop action
+ */
+function desktop_action(action) {
+  $GLOBAL.request.get("desktop/" + action, 
+      {
+        "headers": {
+          "Accept": "application/json"
+        },
+        "handleAs": "json"
+      }
+    ).then(function(data) {
+      if(data['ok']) {
+        $.notify("Action successfully triggert.", "success");
+        return;
+      }
+      
+      $.notify("Failed triggering action.", "error");
+    });
+
+}
+
+
+
+
 

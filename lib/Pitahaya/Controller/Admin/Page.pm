@@ -2,6 +2,7 @@ package Pitahaya::Controller::Admin::Page;
 use Mojo::Base 'Mojolicious::Controller';
 use Mojo::Util 'url_escape';
 
+use IO::All;
 use Data::Dumper;
 
 sub view_tree {
@@ -11,6 +12,29 @@ sub view_tree {
 
 sub view_desktop {
   my $self = shift;
+  my $site_o = $self->stash("site");
+  
+  my $tpl_base_path = 
+    File::Spec->catdir( $FindBin::RealBin, "..", "templates", "admin", "desktop" );
+    
+  my $tpl_site_path = 
+    File::Spec->catdir( "templates", "skin", $site_o->skin, "admin", "desktop" );
+  
+  my @files_base = grep { m/\.html\.ep$/ } io->dir($tpl_base_path)->all;
+  
+  if(-d $tpl_site_path) {
+    push @files_base, grep { m/\.html\.ep$/ } io->dir($tpl_site_path)->all;
+  }
+  
+  my @desktop_tpls = ();
+  
+  for my $fb (@files_base) {
+    $fb =~ s/.*templates\/(.*?)\.html\.ep$/$1/;
+    push @desktop_tpls, $self->render_to_string($fb);
+  }
+  
+  $self->stash("desktop_widgets", \@desktop_tpls);
+  
   $self->render("admin/page/desktop");
 }
 
