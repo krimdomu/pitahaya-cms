@@ -1,0 +1,914 @@
+---
+schema:
+  procedures: {}
+  tables:
+    media:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+            - site_id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - site_id
+          match_type: ''
+          name: media_fk_site_id
+          on_delete: ''
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - site_id
+          reference_table: media
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - site_id
+          match_type: ''
+          name: media_fk_site_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: site
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - type_id
+          match_type: ''
+          name: media_fk_type_id
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields:
+            - id
+          reference_table: media_type
+          type: FOREIGN KEY
+      fields:
+        active:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: active
+          order: 6
+          size:
+            - 1
+        c_date:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: CURRENT_TIMESTAMP
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: c_date
+          order: 15
+          size:
+            - 0
+        content:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: content
+          order: 19
+          size:
+            - 0
+        creator_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: creator_id
+          order: 8
+          size:
+            - 0
+        data:
+          data_type: jsonb
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: data
+          order: 20
+          size:
+            - 0
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 12
+          size:
+            - 500
+        hidden:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: hidden
+          order: 7
+          size:
+            - 1
+        id:
+          data_type: serial
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        keywords:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: keywords
+          order: 13
+          size:
+            - 500
+        level:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: level
+          order: 4
+          size:
+            - 0
+        lft:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: lft
+          order: 2
+          size:
+            - 0
+        lock_date:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: lock_date
+          order: 18
+          size:
+            - 0
+        m_date:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: CURRENT_TIMESTAMP
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: m_date
+          order: 16
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 9
+          size:
+            - 150
+        rel_date:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: rel_date
+          order: 17
+          size:
+            - 0
+        rgt:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: rgt
+          order: 3
+          size:
+            - 0
+        site_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: site_id
+          order: 5
+          size:
+            - 0
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 11
+          size:
+            - 150
+        type_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: type_id
+          order: 14
+          size:
+            - 0
+        url:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: url
+          order: 10
+          size:
+            - 250
+      indices:
+        - fields:
+            - site_id
+          name: media_idx_site_id
+          options: []
+          type: NORMAL
+        - fields:
+            - type_id
+          name: media_idx_type_id
+          options: []
+          type: NORMAL
+      name: media
+      options: []
+      order: 5
+    media_type:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - site_id
+          match_type: ''
+          name: media_type_fk_site_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: site
+          type: FOREIGN KEY
+      fields:
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 4
+          size:
+            - 500
+        id:
+          data_type: serial
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 3
+          size:
+            - 150
+        site_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: site_id
+          order: 2
+          size:
+            - 0
+      indices:
+        - fields:
+            - site_id
+          name: media_type_idx_site_id
+          options: []
+          type: NORMAL
+      name: media_type
+      options: []
+      order: 3
+    page:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+            - site_id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - creator_id
+          match_type: ''
+          name: page_fk_creator_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: users
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - site_id
+          match_type: ''
+          name: page_fk_site_id
+          on_delete: ''
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - site_id
+          reference_table: page
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - site_id
+          match_type: ''
+          name: page_fk_site_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: site
+          type: FOREIGN KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - type_id
+          match_type: ''
+          name: page_fk_type_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: page_type
+          type: FOREIGN KEY
+      fields:
+        active:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: active
+          order: 6
+          size:
+            - 1
+        c_date:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: CURRENT_TIMESTAMP
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: c_date
+          order: 16
+          size:
+            - 0
+        content:
+          data_type: text
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: content
+          order: 20
+          size:
+            - 0
+        creator_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: creator_id
+          order: 9
+          size:
+            - 0
+        data:
+          data_type: jsonb
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: data
+          order: 21
+          size:
+            - 0
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 13
+          size:
+            - 1000
+        hidden:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: hidden
+          order: 7
+          size:
+            - 1
+        id:
+          data_type: serial
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        keywords:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: keywords
+          order: 14
+          size:
+            - 1000
+        level:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: level
+          order: 4
+          size:
+            - 0
+        lft:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: lft
+          order: 2
+          size:
+            - 0
+        lock_date:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: lock_date
+          order: 19
+          size:
+            - 0
+        m_date:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: CURRENT_TIMESTAMP
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: m_date
+          order: 17
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 10
+          size:
+            - 150
+        navigation:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: navigation
+          order: 8
+          size:
+            - 1
+        rel_date:
+          data_type: timestamp
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: rel_date
+          order: 18
+          size:
+            - 0
+        rgt:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: rgt
+          order: 3
+          size:
+            - 0
+        site_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: site_id
+          order: 5
+          size:
+            - 0
+        title:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: title
+          order: 12
+          size:
+            - 150
+        type_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: type_id
+          order: 15
+          size:
+            - 0
+        url:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: url
+          order: 11
+          size:
+            - 250
+      indices:
+        - fields:
+            - creator_id
+          name: page_idx_creator_id
+          options: []
+          type: NORMAL
+        - fields:
+            - site_id
+          name: page_idx_site_id
+          options: []
+          type: NORMAL
+        - fields:
+            - type_id
+          name: page_idx_type_id
+          options: []
+          type: NORMAL
+      name: page
+      options: []
+      order: 6
+    page_type:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+        - deferrable: 1
+          expression: ''
+          fields:
+            - site_id
+          match_type: ''
+          name: page_type_fk_site_id
+          on_delete: CASCADE
+          on_update: CASCADE
+          options: []
+          reference_fields:
+            - id
+          reference_table: site
+          type: FOREIGN KEY
+      fields:
+        description:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: description
+          order: 4
+          size:
+            - 500
+        id:
+          data_type: serial
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 3
+          size:
+            - 150
+        site_id:
+          data_type: integer
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: site_id
+          order: 2
+          size:
+            - 0
+      indices:
+        - fields:
+            - site_id
+          name: page_type_idx_site_id
+          options: []
+          type: NORMAL
+      name: page_type
+      options: []
+      order: 4
+    site:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        c_date:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: CURRENT_TIMESTAMP
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: c_date
+          order: 3
+          size:
+            - 0
+        data:
+          data_type: jsonb
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: data
+          order: 7
+          size:
+            - 0
+        id:
+          data_type: serial
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        m_date:
+          data_type: timestamp
+          default_value: !!perl/ref
+            =: CURRENT_TIMESTAMP
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: m_date
+          order: 4
+          size:
+            - 0
+        name:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: name
+          order: 2
+          size:
+            - 150
+        skin:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: skin
+          order: 5
+          size:
+            - 150
+        virtual_hosts:
+          data_type: jsonb
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: virtual_hosts
+          order: 6
+          size:
+            - 0
+      indices: []
+      name: site
+      options: []
+      order: 1
+    users:
+      constraints:
+        - deferrable: 1
+          expression: ''
+          fields:
+            - id
+          match_type: ''
+          name: ''
+          on_delete: ''
+          on_update: ''
+          options: []
+          reference_fields: []
+          reference_table: ''
+          type: PRIMARY KEY
+      fields:
+        data:
+          data_type: jsonb
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: data
+          order: 5
+          size:
+            - 0
+        email:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 1
+          is_primary_key: 0
+          is_unique: 0
+          name: email
+          order: 4
+          size:
+            - 250
+        id:
+          data_type: serial
+          default_value: ~
+          is_auto_increment: 1
+          is_nullable: 0
+          is_primary_key: 1
+          is_unique: 0
+          name: id
+          order: 1
+          size:
+            - 0
+        password:
+          data_type: text
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: password
+          order: 3
+          size:
+            - 0
+        username:
+          data_type: varchar
+          default_value: ~
+          is_nullable: 0
+          is_primary_key: 0
+          is_unique: 0
+          name: username
+          order: 2
+          size:
+            - 150
+      indices: []
+      name: users
+      options: []
+      order: 2
+  triggers: {}
+  views: {}
+translator:
+  add_drop_table: 0
+  filename: ~
+  no_comments: 0
+  parser_args:
+    sources:
+      - Media
+      - MediaType
+      - Page
+      - PageType
+      - Site
+      - User
+  parser_type: SQL::Translator::Parser::DBIx::Class
+  producer_args: {}
+  producer_type: SQL::Translator::Producer::YAML
+  show_warnings: 0
+  trace: 0
+  version: 0.11021

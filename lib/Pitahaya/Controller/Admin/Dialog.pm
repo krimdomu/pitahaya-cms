@@ -12,8 +12,8 @@ use File::chdir;
 use Data::Dumper;
 
 sub select_page_or_media {
-  my ($self) = @_;
-  $self->render('admin/dialog/select_page_or_media');
+    my ($self) = @_;
+    $self->render('admin/dialog/select_page_or_media');
 }
 
 1;

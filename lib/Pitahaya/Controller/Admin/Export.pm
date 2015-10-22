@@ -12,133 +12,157 @@ use File::chdir;
 use Data::Dumper;
 
 sub export {
-  my ($self) = @_;
-  my $site_o = $self->stash("site");
+    my ($self) = @_;
+    my $site_o = $self->stash("site");
 
-  my $time = time();
-  my $export_to = File::Spec->catdir($self->config->{export}->{dir}, $site_o->name, $time);  
+    my $time = time();
+    my $export_to =
+      File::Spec->catdir( $self->config->{export}->{dir}, $site_o->name,
+        $time );
 
-  make_path($export_to);
+    make_path($export_to);
 
-  {
-    open(my $fh, ">", File::Spec->catfile($export_to, "site.json"));
-    print $fh encode_json($site_o->get_data);
-    print $fh "\n";
-    close($fh);
-  }
-
-  {
-    my @pages = $self->db->resultset("Page")->search({site_id => $site_o->id});
-    open(my $fh, ">", File::Spec->catfile($export_to, "pages.json"));
-    for my $page (@pages) {
-      print $fh encode_json($page->get_data);
-      print $fh "\n";
+    {
+        open( my $fh, ">", File::Spec->catfile( $export_to, "site.json" ) );
+        print $fh encode_json( $site_o->get_data );
+        print $fh "\n";
+        close($fh);
     }
-    close($fh);
-  }
 
-  {
-    my @medias = $self->db->resultset("Media")->search({site_id => $site_o->id});
-    open(my $fh, ">", File::Spec->catfile($export_to, "media.json"));
-    for my $media (@medias) {
-      my $data = $media->get_data;
-
-      if($data->{content} && $data->{content} =~ m/^file:\/\//) {
-        my $data_dir = File::Spec->catdir($self->config->{data_dir}, $site_o->name);
-        $data->{content} =~ s/^file:\/\/\Q$data_dir\E//;
-      }
-
-      print $fh encode_json($data);
-      print $fh "\n";
+    {
+        my @pages =
+          $self->db->resultset("Page")->search( { site_id => $site_o->id } );
+        open( my $fh, ">", File::Spec->catfile( $export_to, "pages.json" ) );
+        for my $page (@pages) {
+            print $fh encode_json( $page->get_data );
+            print $fh "\n";
+        }
+        close($fh);
     }
-    close($fh);
-  }
 
-  {
-    my @page_types = $self->db->resultset("PageType")->search({site_id => $site_o->id});
-    open(my $fh, ">", File::Spec->catfile($export_to, "page_types.json"));
-    for my $page_type (@page_types) {
-      print $fh encode_json($page_type->get_data);
-      print $fh "\n";
+    {
+        my @medias =
+          $self->db->resultset("Media")->search( { site_id => $site_o->id } );
+        open( my $fh, ">", File::Spec->catfile( $export_to, "media.json" ) );
+        for my $media (@medias) {
+            my $data = $media->get_data;
+
+            if ( $data->{content} && $data->{content} =~ m/^file:\/\// ) {
+                my $data_dir = File::Spec->catdir( $self->config->{data_dir},
+                    $site_o->name );
+                $data->{content} =~ s/^file:\/\/\Q$data_dir\E//;
+            }
+
+            print $fh encode_json($data);
+            print $fh "\n";
+        }
+        close($fh);
     }
-    close($fh);
-  }
 
-  {
-    my @media_types = $self->db->resultset("MediaType")->search({site_id => $site_o->id});
-    open(my $fh, ">", File::Spec->catfile($export_to, "media_types.json"));
-    for my $media_type (@media_types) {
-      print $fh encode_json($media_type->get_data);
-      print $fh "\n";
+    {
+        my @page_types = $self->db->resultset("PageType")
+          ->search( { site_id => $site_o->id } );
+        open( my $fh, ">",
+            File::Spec->catfile( $export_to, "page_types.json" ) );
+        for my $page_type (@page_types) {
+            print $fh encode_json( $page_type->get_data );
+            print $fh "\n";
+        }
+        close($fh);
     }
-    close($fh);
-  }
 
-  {
-    my $media_dir = File::Spec->catdir($self->config->{data_dir}, $site_o->name );
-    my $media_export_dir = File::Spec->catdir($export_to, "media");
-    make_path($media_export_dir);
-    dircopy($media_dir, $media_export_dir);
-  }
+    {
+        my @media_types = $self->db->resultset("MediaType")
+          ->search( { site_id => $site_o->id } );
+        open( my $fh, ">",
+            File::Spec->catfile( $export_to, "media_types.json" ) );
+        for my $media_type (@media_types) {
+            print $fh encode_json( $media_type->get_data );
+            print $fh "\n";
+        }
+        close($fh);
+    }
 
-  {
-    my $skin_dir = File::Spec->catdir("templates", "skin", $site_o->skin );
-    my $skin_export_dir = File::Spec->catdir($export_to, "templates", "skin", $site_o->skin);
+    {
+        my $media_dir =
+          File::Spec->catdir( $self->config->{data_dir}, $site_o->name );
+        my $media_export_dir = File::Spec->catdir( $export_to, "media" );
+        make_path($media_export_dir);
+        dircopy( $media_dir, $media_export_dir );
+    }
 
-    my $layout_dir = File::Spec->catdir("templates", "layouts", "skin", $site_o->skin );
-    my $layout_export_dir = File::Spec->catdir($export_to, "templates", "layouts", "skin", $site_o->skin);
+    {
+        my $skin_dir = File::Spec->catdir( "templates", "skin", $site_o->skin );
+        my $skin_export_dir =
+          File::Spec->catdir( $export_to, "templates", "skin", $site_o->skin );
 
-    make_path($skin_export_dir);
-    make_path($layout_export_dir);
+        my $layout_dir =
+          File::Spec->catdir( "templates", "layouts", "skin", $site_o->skin );
+        my $layout_export_dir =
+          File::Spec->catdir( $export_to, "templates", "layouts", "skin",
+            $site_o->skin );
 
-    dircopy($skin_dir, $skin_export_dir);
-    dircopy($layout_dir, $layout_export_dir);
-  }
+        make_path($skin_export_dir);
+        make_path($layout_export_dir);
 
-  {
-    my $site_dir = File::Spec->catdir("vendor", "site", $site_o->name );
-    my $site_export_dir = File::Spec->catdir($export_to, "vendor", "site", $site_o->name);
+        dircopy( $skin_dir,   $skin_export_dir );
+        dircopy( $layout_dir, $layout_export_dir );
+    }
 
-    make_path($site_export_dir);
+    {
+        my $site_dir = File::Spec->catdir( "vendor", "site", $site_o->name );
+        my $site_export_dir =
+          File::Spec->catdir( $export_to, "vendor", "site", $site_o->name );
 
-    dircopy($site_dir, $site_export_dir);
-  }
+        make_path($site_export_dir);
 
-  {
-    my $public_css_dir = File::Spec->catdir("public", "css", "skin", $site_o->skin );
-    my $public_css_export_dir = File::Spec->catdir($export_to, "public", "css", "skin", $site_o->skin);
+        dircopy( $site_dir, $site_export_dir );
+    }
 
-    make_path($public_css_export_dir);
+    {
+        my $public_css_dir =
+          File::Spec->catdir( "public", "css", "skin", $site_o->skin );
+        my $public_css_export_dir =
+          File::Spec->catdir( $export_to, "public", "css", "skin",
+            $site_o->skin );
 
-    dircopy($public_css_dir, $public_css_export_dir);
-  }
+        make_path($public_css_export_dir);
 
-  {
-    my $public_img_dir = File::Spec->catdir("public", "images", "skin", $site_o->skin );
-    my $public_img_export_dir = File::Spec->catdir($export_to, "public", "images", "skin", $site_o->skin);
+        dircopy( $public_css_dir, $public_css_export_dir );
+    }
 
-    make_path($public_img_export_dir);
+    {
+        my $public_img_dir =
+          File::Spec->catdir( "public", "images", "skin", $site_o->skin );
+        my $public_img_export_dir =
+          File::Spec->catdir( $export_to, "public", "images", "skin",
+            $site_o->skin );
 
-    dircopy($public_img_dir, $public_img_export_dir);
-  }
+        make_path($public_img_export_dir);
 
-  {
-    my $public_js_dir = File::Spec->catdir("public", "js", "skin", $site_o->skin );
-    my $public_js_export_dir = File::Spec->catdir($export_to, "public", "js", "skin", $site_o->skin);
+        dircopy( $public_img_dir, $public_img_export_dir );
+    }
 
-    make_path($public_js_export_dir);
+    {
+        my $public_js_dir =
+          File::Spec->catdir( "public", "js", "skin", $site_o->skin );
+        my $public_js_export_dir =
+          File::Spec->catdir( $export_to, "public", "js", "skin",
+            $site_o->skin );
 
-    dircopy($public_js_dir, $public_js_export_dir);
-  }
+        make_path($public_js_export_dir);
 
-  {
-    local $CWD = $export_to;
-    system "tar czf ../$time.tar.gz *";
-  }
+        dircopy( $public_js_dir, $public_js_export_dir );
+    }
 
-  remove_tree($export_to);
+    {
+        local $CWD = $export_to;
+        system "tar czf ../$time.tar.gz *";
+    }
 
-  $self->render(json => {ok => Mojo::JSON->true});
+    remove_tree($export_to);
+
+    $self->render( json => { ok => Mojo::JSON->true } );
 }
 
 1;
