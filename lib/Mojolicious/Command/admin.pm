@@ -44,6 +44,12 @@ Commandas for pitahaya admin:
     --create_lang                 create a new language for site_name
       --for site_name
       --name language
+  
+  virtual_host                    
+    --add                         add a virtualhost to a site
+    --rm                          remove a virtualhost from a site
+    --site site_name
+    --name virtual_host
       
   page_type                       manage page types
     --create                      create a new page type
@@ -54,6 +60,84 @@ Commandas for pitahaya admin:
         print "\n";
 
         return;
+    }
+
+    if ( $command eq "virtual_host" ) {
+        my ( $name, $site, $add, $rm );
+        GetOptionsFromArray \@args,
+          's|site=s' => sub { $site = $_[1] },
+          'n|name=s' => sub { $name = $_[1] },
+          'a|add'    => sub { $add  = $_[1] },
+          'r|rm'     => sub { $rm   = $_[1] };
+
+        if ($add) {
+            if ( !$name ) {
+                $self->app->log->error(
+"You have to specify the name of the name of the virtual host."
+                );
+                return;
+            }
+
+            if ( !$site ) {
+                $self->app->log->error(
+                    "You have to specify the name of the site.");
+                return;
+            }
+
+            my $site_o =
+              $self->app->db->resultset("Site")->search_rs( { name => $site } )
+              ->next;
+
+            if ( !$site_o ) {
+                $self->app->log->error("No site $site found.");
+                return;
+            }
+
+            my $vhost = $self->app->db->resultset("VirtualHost")->create(
+                {
+                    site_id => $site_o->id,
+                    name    => $name,
+                }
+            );
+        }
+
+        if ($rm) {
+            if ( !$name ) {
+                $self->app->log->error(
+"You have to specify the name of the name of the virtual host."
+                );
+                return;
+            }
+
+            if ( !$site ) {
+                $self->app->log->error(
+                    "You have to specify the name of the site.");
+                return;
+            }
+
+            my $site_o =
+              $self->app->db->resultset("Site")->search_rs( { name => $site } )
+              ->next;
+
+            if ( !$site_o ) {
+                $self->app->log->error("No site $site found.");
+                return;
+            }
+
+            my @vhost = $site_o->virtual_hosts(
+                {
+                    name => $name,
+                }
+            );
+
+            if ( !$vhost[0] ) {
+                $self->app->log->error("No virtual host found.");
+                return;
+            }
+
+            $vhost[0]->delete;
+        }
+
     }
 
     if ( $command eq "page_type" ) {

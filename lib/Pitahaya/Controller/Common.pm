@@ -8,9 +8,23 @@ use Data::Dumper;
 sub prepare {
     my $self = shift;
 
-    # TODO: detect vhost
-    #  my $vhost  =
-    my $site_o = $self->db->resultset("Site")->find(8);
+    my $vhost = $self->req->headers->host;
+
+    $self->app->log->debug("Searching site for virtual host: $vhost");
+
+    my $vhost_o =
+      $self->db->resultset("VirtualHost")->search_rs( { name => $vhost } )
+      ->next;
+    my $site_o;
+
+    if ( !$vhost_o ) {
+        $self->app->log->debug("No site found for: $vhost");
+        $site_o = $self->db->resultset("Site")->find(1);
+    }
+    else {
+        $site_o = $vhost_o->site;
+    }
+
     $self->stash( site => $site_o );
 
     my $url = $self->req->url->path;
