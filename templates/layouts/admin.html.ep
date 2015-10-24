@@ -86,6 +86,38 @@
                       <div id="view_user" data-dojo-type="dijit/MenuItem">
                         Users
                       </div>
+                      <div id="view_language" data-dojo-type="dijit/PopupMenuItem">
+                        <span>Languages...</span>
+                        <div id="viewLanguage" data-dojo-type="dijit/DropDownMenu">
+
+                        % my $master = $site->master;
+                        % my @langs;
+                        % if($master) {
+                            <div id="file_view_language_<%= $master->master_site->id %>" data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function(){document.location.href='/admin/<%= $master->master_site->name %>/'}">
+                              %= $master->master_site->name;
+                            </div>
+                            <div data-dojo-type="dijit/MenuSeparator"></div>
+                          % @langs = $master->master_site->languages;
+                        % }
+                        % else {
+                          <div id="file_view_language_<%= $site->id %>" data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function(){document.location.href='/admin/<%= $site->name %>/'}">
+                            %= $site->name;
+                          </div>
+                          <div data-dojo-type="dijit/MenuSeparator"></div>
+                          % @langs = $site->languages;
+                        % }
+                        
+                        % if( $langs[0] ) {
+                      
+                          % for my $lang (@langs) {
+                            <div id="file_view_language_<%= $lang->lang_site->id %>" data-dojo-type="dijit/MenuItem" data-dojo-props="onClick:function(){document.location.href='/admin/<%= $lang->lang_site->name %>/'}">
+                              %= $lang->lang_site->name;
+                            </div>
+                          % }
+                          
+                        % }
+                        </div>
+                      </div>
                     </div>
                   </div>
 

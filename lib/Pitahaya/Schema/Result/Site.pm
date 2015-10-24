@@ -63,6 +63,10 @@ __PACKAGE__->has_many( "pages",  "Pitahaya::Schema::Result::Page",  "site_id" );
 __PACKAGE__->has_many( "medias", "Pitahaya::Schema::Result::Media", "site_id" );
 __PACKAGE__->has_many( "virtual_hosts",
     "Pitahaya::Schema::Result::VirtualHost", "site_id" );
+__PACKAGE__->has_one( "master", "Pitahaya::Schema::Result::Language",
+    "lang_site_id" );
+__PACKAGE__->has_many( "languages", "Pitahaya::Schema::Result::Language",
+    "master_site_id" );
 
 ################################################################################
 # page methods

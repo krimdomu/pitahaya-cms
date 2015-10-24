@@ -420,12 +420,13 @@ Commandas for pitahaya admin:
                     $data->{site_id} = $lang_site_o->id;
                     $self->app->db->resultset("Media")->create($data);
                 }
-
-                my $data = $site_o->data;
-                $data->{langs} ||= [];
-                push @{ $data->{langs} }, $lang_site_o->id;
+                
                 $self->app->log->info("Registering language to $for");
-                $site_o->update( { data => $data } );
+
+                my $lang_o = $self->app->db->resultset("Language")->create({
+                  master_site_id => $site_o->id,
+                  lang_site_id   => $lang_site_o->id,
+                });
 
                 $self->app->log->info(
                     "Copying data files from data/$for to data/$name.$for");
