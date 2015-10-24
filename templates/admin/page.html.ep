@@ -93,8 +93,27 @@
         </table>
       </div>
 
-      <br />
+      % my @langs = $site->languages;
+      % if( $langs[0] ) {
+        <br />
+        
+        <div data-dojo-type="dijit/TitlePane" data-dojo-props="title: 'Language settings'">
 
+          <table border="0">
+          % for my $lang (@langs) {
+            <tr>
+              <td><label for="site_lang_<%= $lang->lang_site->id %>">Link <%= $lang->lang_site->name %>:</label></td>
+              <td><input id="site_lang_<%= $lang->lang_site->id %>" name="site_lang_<%= $lang->lang_site->id %>" data-dojo-type="dijit/form/CheckBox"></td>
+            </tr>
+          % }
+          </table>
+          
+        </div>
+
+      % }
+      
+      <br />
+      
       % if($stash->{info_page}) {
       %== $stash->{info_page}
       % }
