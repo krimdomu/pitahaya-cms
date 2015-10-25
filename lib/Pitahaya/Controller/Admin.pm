@@ -285,6 +285,8 @@ sub media_tree_children {
 sub page_DELETE {
     my $self   = shift;
     my $page_o = $self->stash("site")->get_page( $self->param("page_id") );
+    $self->stash( "page", $page_o );
+
     if ($page_o) {
         $page_o->delete;
 
@@ -320,6 +322,7 @@ sub page_GET {
 sub page_PUT {
     my $self = shift;
 
+    my $site_o = $self->stash("site");
     $self->app->log->debug( "Updating page: " . $self->param("page_id") );
 
     my $page_o = $self->stash("site")->get_page( $self->param("page_id") );
@@ -331,6 +334,20 @@ sub page_PUT {
     my $ref = $self->req->json;
     if ($ref) {
         $page_o->secure_update($ref);
+        
+        if(exists $page_o->data->{language_links} && ref $page_o->data->{language_links} eq "ARRAY") {
+          for my $l_id (@{ $page_o->data->{language_links} }) {
+            my $lang_site = $self->db->resultset("Site")->find($l_id);
+            if($lang_site) {
+              $self->app->log->debug("Updating page lang: $l_id for page: " . $page_o->id . " and site: " . $site_o->id);
+              my $lang_page = $lang_site->get_page($page_o->id);
+              $lang_page->secure_update($ref);
+            }
+            else {
+              $self->app->log->error("LangSite id not found: $l_id for page: " . $page_o->id . " and site: " . $site_o->id);
+            }
+          }
+        }
 
         $self->_execute_action( "PUT", "page_PUT" );
 
@@ -356,6 +373,8 @@ sub page_POST {
 
     my $site_o = $self->stash("site");
     my $page_o = $site_o->get_page( $self->param("page_id") );
+    $self->stash( "page", $page_o );
+    
     my $ref    = $self->req->json;
 
     if ($ref) {
@@ -377,6 +396,16 @@ sub page_POST {
         $ref->{creator_id} = $self->current_user->id;
 
         my $new_page = $page_o->secure_add_to_children($ref);
+
+        my @langs = $site_o->languages;
+        if( $langs[0] ) {
+          $ref->{_id} = $new_page->id;
+          
+          for my $l (@langs) {
+            my $lang_page_o = $l->lang_site->get_page($page_o->id);
+            $lang_page_o->secure_add_to_children($ref);
+          }
+        }
 
         $self->_execute_action( "POST", "page_POST" );
 

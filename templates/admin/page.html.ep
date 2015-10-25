@@ -180,12 +180,30 @@
       $("#" + tinyMCE.get('page_content').id + "_ifr").height($("#page_content_content_pane").height() - 110);
     });
 
-
-
+    var language_links = page_data_get("language_links");
+    console.log(language_links);
+    
+    $.each( language_links, function(index, value) {
+      $GLOBAL.registry.byId("site_lang_" + value).set("checked", true);
+    });
   }
 
   function onpage_save() {
     page_set("content", tinyMCE.get('page_content').getContent());
+
+% if( $langs[0] ) {
+    var language_links = new Array();
+  % for my $lang (@langs) {
+    console.log("is checked? (<%= $lang->lang_site->name %>) " + $("#site_lang_<%= $lang->lang_site->id %>").prop('checked'));
+    if($("#site_lang_<%= $lang->lang_site->id %>").prop('checked')) {
+      language_links.push(<%= $lang->lang_site->id %>);
+    }
+  % }
+    
+    
+    page_data_set("language_links", language_links);
+% }
+    
   }
 
   function onpage_unload() {

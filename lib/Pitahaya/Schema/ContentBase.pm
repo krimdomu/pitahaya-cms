@@ -21,10 +21,15 @@ sub secure_add_to_children {
     my $new_data = {};
 
     delete $ref->{id};
-    delete $ref->{site_id};
+#    delete $ref->{site_id};
     delete $ref->{c_date};
     delete $ref->{parent};
     delete $ref->{children};
+    
+    if($ref->{_id}) {
+      $ref->{id} = $ref->{_id};
+      delete $ref->{_id};
+    }
 
     my %columns = $self->get_columns;
 
