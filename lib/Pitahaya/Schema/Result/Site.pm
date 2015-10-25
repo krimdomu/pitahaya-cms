@@ -187,6 +187,25 @@ sub get_media_types {
     return $self->media_types;
 }
 
+
+################################################################################
+# language methods
+################################################################################
+
+sub get_language_sites {
+  my ($self) = @_;
+  my @ret;
+  
+  my @langs = $self->languages;
+  
+  for my $l (@langs) {
+    push @ret, $l->lang_site;
+  }
+  
+  return @ret;
+}
+
+
 1;
 
 __END__

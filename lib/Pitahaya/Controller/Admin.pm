@@ -11,6 +11,23 @@ use Mojo::JSON 'decode_json', 'encode_json';
 use FindBin;
 use Cwd 'realpath';
 
+sub master {
+  my ($self) = @_;
+  
+  my $site_o = $self->stash("site");
+  
+  my $master = $site_o->master;
+  my $master_o;
+  if($master) {
+    $master_o = $master->master_site;
+  }
+  else {
+    $master_o = $site_o;
+  }
+
+  return $master_o;
+}
+
 sub check_login {
     my ($self) = @_;
 
@@ -284,11 +301,38 @@ sub media_tree_children {
 
 sub page_DELETE {
     my $self   = shift;
-    my $page_o = $self->stash("site")->get_page( $self->param("page_id") );
+    my $site_o = $self->stash("site");
+    my $page_o = $site_o->get_page( $self->param("page_id") );
     $self->stash( "page", $page_o );
 
     if ($page_o) {
-        $page_o->delete;
+        
+        my $master_o = $self->master;
+        my @sites = $master_o->get_language_sites;
+        
+        if($master_o->id != $site_o->id) {
+          push @sites, $master_o;
+        }
+        else {
+          # master is current site
+          push @sites, $site_o;
+        }
+        
+        for my $s (@sites) {
+          next if $s->id == $site_o->id;
+          
+          my $p = $s->get_page($page_o->id);
+          if( ($p->content ne $page_o->content) || ( $p->active ) ) {
+            return $self->render( json => { ok => Mojo::JSON->false, error => "Can't delete page, because language pages have different content.'" }, status => 500 );
+          }
+        }
+        
+        if( $sites[0] ) {
+          for my $l (@sites) {
+            my $lang_page_o = $l->get_page($page_o->id);
+            $lang_page_o->delete;
+          }
+        }
 
         $self->_execute_action( "DELETE", "page_DELETE" );
 
@@ -397,12 +441,20 @@ sub page_POST {
 
         my $new_page = $page_o->secure_add_to_children($ref);
 
-        my @langs = $site_o->languages;
+        my $master_o = $self->master;
+        my @langs = $master_o->get_language_sites;
+        
+        if($site_o->id != $master_o->id) {
+          push @langs, $master_o;
+        }
+
         if( $langs[0] ) {
           $ref->{_id} = $new_page->id;
           
           for my $l (@langs) {
-            my $lang_page_o = $l->lang_site->get_page($page_o->id);
+            next if $l->id == $site_o->id;
+            
+            my $lang_page_o = $l->get_page($page_o->id);
             $lang_page_o->secure_add_to_children($ref);
           }
         }
