@@ -33,7 +33,7 @@
             </td>
           </tr>
           <tr>
-            <td><label for="page_type">Type:</label></td>
+            <td><label for="page_type">Page-Type:</label></td>
             <td>
               <select id="page_type" name="type" data-dojo-type="dijit/form/Select">
                 % for my $type ($site->get_page_types) {
@@ -41,6 +41,20 @@
                 <option value="<%= $type->id %>" selected="selected"><%= $type->name %></option>
                 % } else {
                 <option value="<%= $type->id %>"><%= $type->name %></option>
+                % }
+                % }
+              </select>
+            </td>
+          </tr>
+          <tr>
+            <td><label for="content_type">Content-Type:</label></td>
+            <td>
+              <select id="content_type" name="content_type" data-dojo-type="dijit/form/Select">
+                % for my $c_type ($site->content_types) {
+                % if($page->content_type->id == $c_type->id) {
+                <option value="<%= $c_type->id %>" selected="selected"><%= $c_type->name %></option>
+                % } else {
+                <option value="<%= $c_type->id %>"><%= $c_type->name %></option>
                 % }
                 % }
               </select>
@@ -124,9 +138,18 @@
     <!-- content editing -->
     <!-- -------------------------------------------------------------------------------- -->
 
+    % if($page->content_type->name eq "text/html") {
     <div id="page_content_content_pane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Content'">
       <textarea name="page_content" class="wysiwyg_editor" id="page_content" rows="8" cols="40"></textarea>
     </div>
+    % }
+
+    % if($page->content_type->name eq "text/markdown") {
+    <div id="page_content_content_pane" data-dojo-type="dijit/layout/ContentPane" data-dojo-props="title: 'Content'">
+      <textarea name="page_content" class="markdown_editor" id="page_content" rows="20" cols="80"></textarea>
+    </div>
+    % }
+
 
     <!-- -------------------------------------------------------------------------------- -->
     <!-- custom tabs -->
@@ -143,6 +166,8 @@
 <script type="text/javascript" charset="utf-8">
   function onpage_load(data) {
     $("#page_content").val(data['content'] || "");
+
+% if($page->content_type->name eq "text/html") {
 
     tinymce.init({
       selector: "#page_content",
@@ -180,6 +205,16 @@
       $("#" + tinyMCE.get('page_content').id + "_ifr").height($("#page_content_content_pane").height() - 110);
     });
 
+% }
+
+% if($page->content_type->name eq "text/markdown") {
+/*  $GLOBAL['md_editor'] = CodeMirror.fromTextArea(page_content, {
+    lineNumbers: true,
+    mode: 'markdown'
+  });
+*/
+% }
+
     var language_links = page_data_get("language_links");
     console.log(language_links);
     
@@ -189,7 +224,14 @@
   }
 
   function onpage_save() {
+% if($page->content_type->name eq "text/html") {
     page_set("content", tinyMCE.get('page_content').getContent());
+% }
+
+% if($page->content_type->name eq "text/markdown") {
+//    page_set("content", $GLOBAL['md_editor'].getValue());
+    page_set("content", $("#page_content").val());
+% }
 
 % if( $langs[0] ) {
     var language_links = new Array();
@@ -207,7 +249,9 @@
   }
 
   function onpage_unload() {
+% if($page->content_type->name eq "text/html") {
     tinymce.remove("#page_content");
+% }
     delete $GLOBAL['page_select_dialog_field'];
   }
 </script>

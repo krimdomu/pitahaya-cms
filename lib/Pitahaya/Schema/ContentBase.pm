@@ -32,11 +32,12 @@ sub secure_add_to_children {
     }
 
     my %columns = $self->get_columns;
-
+print STDERR "(1) secure_add_to_children\n";
     $ref->{hidden} ||= 0;
     $ref->{navigation} //= 1;
     $ref->{active}     //= 1;
     $ref->{type_id} ||= 2;
+print STDERR "(2) secure_add_to_children\n";
 
     my $is_utf8 = 0;
     if ( $ref->{__utf8_check__}
@@ -44,6 +45,7 @@ sub secure_add_to_children {
     {
         $is_utf8 = 1;
     }
+print STDERR "(3) secure_add_to_children\n";
 
     delete $ref->{__utf8_check__};
 
@@ -60,13 +62,19 @@ sub secure_add_to_children {
             $new_data->{$col} = $ref->{$col};
         }
     }
+print STDERR Dumper $new_data;
 
-    if ( $new_data->{url} eq "new_page" ) {
+print STDERR "(4) secure_add_to_children\n";
+    if ( exists $new_data->{url} && $new_data->{url} eq "new_page" ) {
+print STDERR "(5) secure_add_to_children\n";
         $new_data->{url} = $new_data->{name};
     }
 
+print STDERR "(6) secure_add_to_children\n";
     $new_data->{url} =
       $self->_create_url( $is_utf8, ( $new_data->{url} || $new_data->{name} ) );
+
+print STDERR "(7) secure_add_to_children\n";
 
     my $new_page = $self->add_to_children($new_data);
     return $new_page;

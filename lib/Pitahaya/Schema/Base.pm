@@ -76,14 +76,18 @@ sub secure_update {
 
 sub _create_url {
     my ( $self, $is_utf8, $name ) = @_;
+print STDERR "(1) _create_url\n";
 
     # normalize url, so there is no strange symbols in it
     $name =~ s/[^A-Za-z0-9\-_\.]/_/gms;
     $name = lc($name);
+print STDERR "(2) _create_url\n";
 
     if ( !$is_utf8 ) {
+print STDERR "(3) _create_url\n";
         return url_escape( Encode::encode( "UTF-8", $name ) );
     }
+print STDERR "(4) _create_url\n";
 
     return url_escape($name);
 }

@@ -67,6 +67,8 @@ __PACKAGE__->has_one( "master", "Pitahaya::Schema::Result::Language",
     "lang_site_id" );
 __PACKAGE__->has_many( "languages", "Pitahaya::Schema::Result::Language",
     "master_site_id" );
+__PACKAGE__->has_many( "content_types", "Pitahaya::Schema::Result::ContentType",
+    "site_id" );
 
 ################################################################################
 # page methods
@@ -109,6 +111,12 @@ sub get_page_by_url {
 
     # nothing found
     return;
+}
+
+sub get_default_content_type {
+  my ($self) = @_;
+  my $default_type = $self->content_types->search( { name => "text/html" } )->next;
+  return $default_type->id;
 }
 
 sub get_root_page {

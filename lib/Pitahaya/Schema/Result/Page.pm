@@ -71,6 +71,12 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
         default     => 1,
     },
+    content_type_id => {
+        data_type   => 'integer',
+        is_numeric  => 1,
+        is_nullable => 0,
+        default     => 1,
+    },
     name => {
         data_type   => 'varchar',
         size        => 150,
@@ -142,27 +148,43 @@ __PACKAGE__->tree_columns(
 );
 
 __PACKAGE__->belongs_to( "site", "Pitahaya::Schema::Result::Site", "site_id" );
+__PACKAGE__->belongs_to( "content_type", "Pitahaya::Schema::Result::ContentType", {
+  "foreign.id"      => "self.content_type_id",
+  "foreign.site_id" => "self.site_id", 
+});
 __PACKAGE__->belongs_to( "type", "Pitahaya::Schema::Result::PageType",
     "type_id" );
 __PACKAGE__->belongs_to( "creator", "Pitahaya::Schema::Result::User",
     "creator_id" );
 
 around "children" => sub {
-    my $orig = shift;
-    my $self = shift;
+  my $orig = shift;
+  my $self = shift;
 
-    $_[0]->{"parent.site_id"} = $self->site_id;
+  $_[0]->{"parent.site_id"} = $self->site_id;
 
-    return $self->$orig(@_);
+  return $self->$orig(@_);
 };
 
 around "ancestors" => sub {
-    my $orig = shift;
-    my $self = shift;
+  my $orig = shift;
+  my $self = shift;
 
-    $_[0]->{"child.site_id"} = $self->site_id;
+  $_[0]->{"child.site_id"} = $self->site_id;
 
-    return $self->$orig(@_);
+  return $self->$orig(@_);
+};
+
+sub get_parsed_content {
+  my $self = shift;
+  
+  eval "use " . $self->content_type->class;
+  my $ct = $self->content_type->class->new;
+  if($@) {
+    return $self->content;
+  }
+  
+  return $ct->parse($self->content);
 };
 
 1;

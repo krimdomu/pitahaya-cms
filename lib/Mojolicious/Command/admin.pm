@@ -44,6 +44,10 @@ Commandas for pitahaya admin:
     --create_lang                 create a new language for site_name
       --for site_name
       --name language
+    --create_content_type         create a new content-type for site_name
+      --for site_name
+      --name content-type-name
+      --class class               the class name which should be loaded to parse
   
   virtual_host                    
     --add                         add a virtualhost to a site
@@ -340,13 +344,51 @@ Commandas for pitahaya admin:
     }
 
     if ( $command eq "site" ) {
-        my ( $name, $skin, $create, $create_lang, $for );
+        my ( $name, $skin, $create, $create_lang, $for, $create_content_type, $class );
         GetOptionsFromArray \@args,
           'n|name=s'      => sub { $name        = $_[1] },
           's|skin=s'      => sub { $skin        = $_[1] },
           'l|create_lang' => sub { $create_lang = $_[1] },
           'f|for=s'       => sub { $for         = $_[1] },
+          'create_content_type' => sub { $create_content_type = $_[1] },
+          'class=s'       => sub { $class        = $_[1] },
           'c|create'      => sub { $create      = $_[1] };
+
+        if ($create_content_type) {
+            $self->app->log->error(
+                "You have to specify the name of the site (for)")
+              if ( !$for );
+            $self->app->log->error(
+                "You have to specify the class name that should parse the content (class)")
+              if ( !$class );
+            $self->app->log->error(
+                "You have to specify the content type name (name)")
+              if ( !$name );
+        
+            $self->app->log->info("Creating new content type $name for: $for");
+
+            my $site_o =
+              $self->app->db->resultset("Site")->search_rs( { name => $for } )
+              ->next;
+
+            if ( !$site_o ) {
+                $self->app->log->error("No site $for found.");
+                return;
+            }
+
+            my $content_type_o = $self->app->db->resultset("ContentType")
+              ->create( { name => $name, site_id => $site_o->id, class => $class } );
+
+            if( $content_type_o ) {              
+              $self->app->log->info(
+                  "Created new content type with id: " . $content_type_o->id );
+            }
+            else {
+              $self->app->log->error("Failed creating new content type for site $for.");
+              exit 1;
+            }
+              
+        }
 
         if ($create_lang) {
             $self->app->log->error(

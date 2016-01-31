@@ -69,6 +69,7 @@ require([
           page_set("title", registry.byId("page_title").get("value"));
           page_set("description", registry.byId("page_description").get("value"));
           page_set("type_id", registry.byId("page_type").get("value"));
+          page_set("content_type_id", registry.byId("content_type").get("value"));
           page_set("navigation", registry.byId("page_navigation").get("value"), {is_bool: true});
           page_set("active", registry.byId("page_active").get("value"), {is_bool: true});
           page_set("hidden", registry.byId("page_hidden").get("value"), {is_bool: true});

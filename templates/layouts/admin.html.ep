@@ -20,6 +20,7 @@
         <script src="/js/pitahaya/file-upload/js/jquery.iframe-transport.js"></script>
         <script src="/js/pitahaya/file-upload/js/jquery.fileupload.js"></script>
         <script src="/js/pitahaya/tinymce/js/tinymce/tinymce.js"></script>
+        <script src="/js/pitahaya/codemirror-5.11/lib/codemirror.js"></script>
 
     </head>
     <body class="claro">

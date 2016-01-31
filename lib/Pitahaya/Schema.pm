@@ -9,7 +9,7 @@ package Pitahaya::Schema;
 use strict;
 use warnings;
 
-our $VERSION = 5;
+our $VERSION = 7;
 
 use base qw(DBIx::Class::Schema);
 __PACKAGE__->load_namespaces;
