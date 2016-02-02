@@ -1,3 +1,4 @@
+
 package Pitahaya;
 use Mojo::Base 'Mojolicious';
 
@@ -21,7 +22,7 @@ has schema => sub {
     );
 };
 
-our $VERSION = "0.1.4";
+our $VERSION = "0.1.6";
 
 # This method will run once at server start
 sub startup {
