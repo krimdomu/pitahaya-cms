@@ -41,7 +41,7 @@ sub secure_update {
     delete $data->{children};
 
     my $is_utf8 = 0;
-    if ( url_escape( $data->{__utf8_check__} ) eq '%C3%96' ) {
+    if ( $data->{__utf8_check__} && url_escape( $data->{__utf8_check__} ) eq '%C3%96' ) {
         $is_utf8 = 1;
     }
 

@@ -187,6 +187,16 @@ sub get_parsed_content {
   return $ct->parse($self->content);
 };
 
+around get_data => sub {
+  my ($orig, $self) = @_;
+  
+  my $data = $self->$orig();
+  $data->{content_type_name} = $self->content_type->name;
+  $data->{type_name} = $self->type->name;
+  
+  return $data;
+};
+
 1;
 
 __END__

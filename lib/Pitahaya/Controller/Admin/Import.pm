@@ -66,6 +66,10 @@ sub import_into_site {
         for my $page_line (@content) {
             my $ref = decode_json($page_line);
             $self->app->log->debug( "Importing page: " . $ref->{name} );
+            
+            $ref->{content_type_id} ||= $site_o->get_default_content_type;
+            $ref->{type_id} ||= $site_o->get_default_page_type;
+            
             $self->db->resultset("Page")->create($ref);
         }
     }

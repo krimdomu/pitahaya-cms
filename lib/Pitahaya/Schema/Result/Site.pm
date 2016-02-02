@@ -119,6 +119,12 @@ sub get_default_content_type {
   return $default_type->id;
 }
 
+sub get_default_page_type {
+  my ($self) = @_;
+  my $default_type = $self->page_types->search( { name => "page" } )->next;
+  return $default_type->id;
+}
+
 sub get_root_page {
     my ($self) = @_;
     return $self->pages->search_rs( { lft => 1 } )->next;

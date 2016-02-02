@@ -320,22 +320,25 @@ sub page_DELETE {
       next if $s->id == $site_o->id;
 
       my $p = $s->get_page( $page_o->id );
-      if ( ( $p->content ne $page_o->content ) || ( $p->active ) ) {
-        return $self->render(
-          json => {
-            ok => Mojo::JSON->false,
-            error =>
-              "Can't delete page, because language pages have different content.'"
-          },
-          status => 500
-        );
-      }
+
+#      if ( ( $p->content ne $page_o->content ) || ( $p->active ) ) {
+#        $self->app->log->error(
+#          "Can't delete page, because language pages have different content.");
+#        return $self->render(
+#          json => {
+#            ok => Mojo::JSON->false,
+#            error =>
+#              "Can't delete page, because language pages have different content."
+#          },
+#          status => 500
+#        );
+#      }
     }
 
     if ( $sites[0] ) {
       for my $l (@sites) {
         my $lang_page_o = $l->get_page( $page_o->id );
-        $lang_page_o->delete;
+        $lang_page_o->delete if $lang_page_o;
       }
     }
 
@@ -382,10 +385,21 @@ sub page_PUT {
 
   my $ref = $self->req->json;
   if ($ref) {
+    my $page_type_name = $ref->{type_name};
+    delete $ref->{type_name};
+    $ref->{type_id} = $self->_get_page_type_id( $site_o, $page_type_name );
+
+    my $content_type_name = $ref->{content_type_name};
+    delete $ref->{content_type_name};
+    $ref->{content_type_id} =
+      $self->_get_content_type_id( $site_o, $content_type_name );
+
     $page_o->secure_update($ref);
 
-    if ( exists $page_o->data->{language_links}
-      && ref $page_o->data->{language_links} eq "ARRAY" )
+    if (
+      $page_o->data && exists $page_o->data->{language_links}
+      && ref $page_o->data->{language_links} eq "ARRAY"
+      )
     {
       for my $l_id ( @{ $page_o->data->{language_links} } ) {
         my $lang_site = $self->db->resultset("Site")->find($l_id);
@@ -395,6 +409,10 @@ sub page_PUT {
               . " and site: "
               . $site_o->id );
           my $lang_page = $lang_site->get_page( $page_o->id );
+          $ref->{content_type_id} =
+            $self->_get_content_type_id( $lang_site, $content_type_name );
+          $ref->{type_id} =
+            $self->_get_page_type_id( $lang_site, $page_type_name );
           $lang_page->secure_update($ref);
         }
         else {
@@ -441,22 +459,14 @@ sub page_POST {
   $self->app->log->debug( Dumper($ref) );
 
   if ($ref) {
-    if ( exists $ref->{type_name} ) {
-      my $type =
-        $site_o->page_types->search( { "name" => $ref->{type_name} } )->next;
-      if ( !$type ) {
-        return $self->render(
-          json   => { ok => Mojo::JSON->false, error => "Unknown page type" },
-          status => 500
-        );
-      }
-      $ref->{type_id} = $type->id;
-      delete $ref->{type_name};
-    }
+    my $page_type_name = $ref->{type_name};
+    delete $ref->{type_name};
+    $ref->{type_id} = $self->_get_page_type_id( $site_o, $page_type_name );
 
     my $content_type_name = $ref->{content_type_name};
     delete $ref->{content_type_name};
-    $ref->{content_type_id} = $self->_get_content_type_id($site_o, $content_type_name);
+    $ref->{content_type_id} =
+      $self->_get_content_type_id( $site_o, $content_type_name );
 
     $ref->{creator_id} = $self->current_user->id;
 
@@ -478,7 +488,9 @@ sub page_POST {
         next if $l->id == $site_o->id;
 
         my $lang_page_o = $l->get_page( $page_o->id );
-        $ref->{content_type_id} = $self->_get_content_type_id($l, $content_type_name);
+        $ref->{content_type_id} =
+          $self->_get_content_type_id( $l, $content_type_name );
+        $ref->{type_id} = $self->_get_page_type_id( $l, $page_type_name );
         $lang_page_o->secure_add_to_children($ref);
       }
     }
@@ -909,11 +921,26 @@ sub _get_site_admin_inc {
   }
 }
 
+sub _get_page_type_id {
+  my ( $self, $site_o, $type_name ) = @_;
+
+  return $site_o->get_default_page_type unless $type_name;
+
+  my $page_type = $site_o->page_types->search( { "name" => $type_name } )->next;
+  if ( !$page_type ) {
+    return $self->render(
+      json   => { ok => Mojo::JSON->false, error => "Unknown page type" },
+      status => 500
+    );
+  }
+  return $page_type->id;
+}
+
 sub _get_content_type_id {
   my ( $self, $site_o, $content_type_name ) = @_;
 
   return $site_o->get_default_content_type unless $content_type_name;
-  
+
   my $content_type =
     $site_o->content_types->search( { "name" => $content_type_name } )->next;
   if ( !$content_type ) {
