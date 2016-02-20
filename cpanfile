@@ -20,4 +20,5 @@ requires 'Mojolicious::Plugin::Authentication';
 requires 'DBD::Pg';
 requires 'UUID';
 requires 'IO::All';
+requires 'Text::Markdown';
 
