@@ -188,8 +188,8 @@ ALTER TABLE "virtual_host" ADD CONSTRAINT "virtual_host_fk_site_id" FOREIGN KEY 
   REFERENCES "site" ("id") ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE;
 
 ;
-ALTER TABLE "media" ADD CONSTRAINT "media_fk_site_id" FOREIGN KEY ("site_id")
-  REFERENCES "media" ("site_id") ON UPDATE CASCADE DEFERRABLE;
+--ALTER TABLE "media" ADD CONSTRAINT "media_fk_site_id" FOREIGN KEY ("site_id")
+--  REFERENCES "media" ("site_id") ON UPDATE CASCADE DEFERRABLE;
 
 ;
 ALTER TABLE "media" ADD CONSTRAINT "media_fk_site_id" FOREIGN KEY ("site_id")
@@ -208,8 +208,8 @@ ALTER TABLE "page" ADD CONSTRAINT "page_fk_creator_id" FOREIGN KEY ("creator_id"
   REFERENCES "users" ("id") ON DELETE CASCADE ON UPDATE CASCADE DEFERRABLE;
 
 ;
-ALTER TABLE "page" ADD CONSTRAINT "page_fk_site_id" FOREIGN KEY ("site_id")
-  REFERENCES "page" ("site_id") ON UPDATE CASCADE DEFERRABLE;
+--ALTER TABLE "page" ADD CONSTRAINT "page_fk_site_id" FOREIGN KEY ("site_id")
+--  REFERENCES "page" ("site_id") ON UPDATE CASCADE DEFERRABLE;
 
 ;
 ALTER TABLE "page" ADD CONSTRAINT "page_fk_site_id" FOREIGN KEY ("site_id")
