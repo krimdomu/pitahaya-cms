@@ -524,6 +524,12 @@ Commandas for pitahaya admin:
 
                 my ( @page_types, @media_types );
 
+                my $ct = $self->app->db->resultset('ContentType')->create({
+                  site_id => $site_o->id,
+                  name    => 'text/html',
+                  class   => 'Pitahaya::ContentType::text_html',
+                });
+
                 for my $page_type (qw/index page/) {
                     $self->app->log->info("Creating page type: $page_type");
 
@@ -560,8 +566,11 @@ Commandas for pitahaya admin:
                         active     => 1,
                         name       => 'Home',
                         url        => 'Home',
+                        title      => 'Homepage',
+                        content    => 'This is the default content after site creation.',
                         type_id    => $page_types[0]->id,
                         creator_id => $user_o->id,
+                        content_type_id => $ct->id,
                     }
                 );
 
@@ -588,6 +597,10 @@ Commandas for pitahaya admin:
                 make_path "templates/skin/$skin";
                 make_path "templates/layouts/$skin";
                 make_path "vendor/site/$name";
+                
+                open(my $fh, ">", "templates/skin/$skin/index.html.ep") or die("Error creating index.html.ep: $!");
+                print $fh q~<html><body><h1><%= $page->title %></h1><%= $page->content %></body></html>~;
+                close($fh);
             }
 
             $self->app->log->info("");

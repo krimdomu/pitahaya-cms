@@ -896,7 +896,7 @@ sub _execute_action {
   }
 
   my $site_inc_o = $self->_get_site_admin_inc( $self->stash("site"), $page_o );
-  if ( $site_inc_o->can($admin_action) ) {
+  if ( $site_inc_o && $site_inc_o->can($admin_action) ) {
     $site_inc_o->$admin_action();
   }
 
