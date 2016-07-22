@@ -44,7 +44,7 @@ Before you can start initializing the database and creating sites you have to cr
 For this, change into your projects directory and execute:
 
 ```
-bin/pitahaya admin config --host db-host --schema db-name --user db-user --password db-password
+bin/pitahaya admin config --host db-host --schema db-name --user db-user --password db-password --search_host sphinx-host --search_index sphinx-index
 ```
 
 This will create a file *pitahaya.conf* inside your project root directory. You can tweak this file if you need this.
