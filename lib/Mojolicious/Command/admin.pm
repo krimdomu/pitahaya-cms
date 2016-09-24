@@ -4,6 +4,7 @@ use Mojo::Base 'Mojolicious::Command';
 use Getopt::Long qw(GetOptionsFromArray);
 use DBIx::Class::DeploymentHandler;
 
+use IO::All;
 use File::Path qw(make_path);
 use FindBin;
 use File::Basename qw(dirname basename);
@@ -60,6 +61,7 @@ Commandas for pitahaya admin:
       --site site_name
       --type type_name
       [--description desc]
+      [--base]                    don't create template files. use code from base site
     |;
         print "\n";
 
@@ -145,11 +147,12 @@ Commandas for pitahaya admin:
     }
 
     if ( $command eq "page_type" ) {
-        my ( $name, $site, $desc, $create );
+        my ( $name, $site, $desc, $create, $base );
         GetOptionsFromArray \@args,
           's|site=s'        => sub { $site   = $_[1] },
           't|type=s'        => sub { $name   = $_[1] },
           'd|description=s' => sub { $desc   = $_[1] },
+          'b|base'          => sub { $base   = $_[1] },
           'c|create'        => sub { $create = $_[1] };
 
         if ($create) {
@@ -180,8 +183,14 @@ Commandas for pitahaya admin:
                 description => ( $desc || '' ),
             };
 
-            my $new_type = $self->app->db->resultset("PageType")->create($ref);
-
+            require Pitahaya::Controller::Cmd::Pagetype;
+            my $ctrl = Pitahaya::Controller::Cmd::Pagetype->new(app => $self->app);
+            my $new_type = $ctrl->create($ref, {
+              name => $name,
+              site => $site_o,
+              base => $base,
+            });
+            
             $self->app->log->info(
                 "New page type created with id: " . $new_type->id );
         }
@@ -657,3 +666,8 @@ sub schema_version {
 }
 
 1;
+
+
+ 
+
+
