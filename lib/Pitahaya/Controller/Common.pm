@@ -49,6 +49,7 @@ sub prepare {
     else {
         my $page_o = $site_o->get_page_by_url( $self->req->url->path );
         if ( !$page_o ) {
+            $self->app->log->error("current site: " . $self->stash("site")->name);
             $self->app->log->error(
                 "Requested page not found: " . $self->req->url );
             my $site_inc_o = $self->_get_site_inc( $self->stash("site") );
@@ -124,7 +125,12 @@ sub page {
             controller => $self
         );
         my $meth = $self->req->method;
-        $inc_o->$meth();
+        if($inc_o->can($meth)) {
+          $inc_o->$meth();
+        }
+        else {
+          $self->app->log->debug("No $meth method defined in " . ref($inc_o));
+        }
     }
 
     $self->render("skin/$skin/$type");
