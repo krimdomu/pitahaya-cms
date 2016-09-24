@@ -216,11 +216,13 @@
 % }
 
     var language_links = page_data_get("language_links");
-    console.log(language_links);
-    
-    $.each( language_links, function(index, value) {
-      $GLOBAL.registry.byId("site_lang_" + value).set("checked", true);
-    });
+    if(language_links) {
+      console.log(language_links);
+      
+      $.each( language_links, function(index, value) {
+        $GLOBAL.registry.byId("site_lang_" + value).set("checked", true);
+      });
+    }
   }
 
   function onpage_save() {
