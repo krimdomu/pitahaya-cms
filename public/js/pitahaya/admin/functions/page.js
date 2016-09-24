@@ -193,7 +193,10 @@ function page_data_set(key, value, opts) {
  * Get a `data` value of the current loaded page.
  */
 function page_data_get(key) {
-  if(typeof $GLOBAL.page['data'] == "object" && typeof $GLOBAL.page['data'][key] != "undefined") {
+	  console.log("page_data_get: " + typeof $GLOBAL.page);
+	  console.log($GLOBAL);
+	  
+  if($GLOBAL.page['data'] != null && typeof $GLOBAL.page['data'] == "object" && typeof $GLOBAL.page['data'][key] != "undefined") {
     return $GLOBAL.page['data'][key];
   }
   else {
