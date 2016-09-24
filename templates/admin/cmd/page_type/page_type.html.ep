@@ -1,0 +1,13 @@
+package <%= ucfirst($type_name) %>;
+
+use Mojo::Base 'Pitahaya::PageType';
+
+#sub GET {
+#  my ($self) = @_;
+#}
+
+#sub POST {
+#  my ($self) = @_;
+#}
+
+1;
