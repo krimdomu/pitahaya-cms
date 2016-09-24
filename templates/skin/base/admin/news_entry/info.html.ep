@@ -13,14 +13,16 @@
 
 <script type="text/javascript" charset="utf-8">
   function onpage_data_load() {
+  
     var value = page_data_get("news_date");
 
     if(value) {
       var val_date = value.split(/[T ]/)[0];
       var val_time = value.split(/[T ]/)[1].split(/:/);
-      console.log(">> " + val_date);
-      console.log(">> " + val_time);
+      console.log("!>> " + val_date);
+      console.log("!>> " + val_time);
       
+
       $GLOBAL.registry.byId("page_news_date").set("value", val_date);
       $GLOBAL.registry.byId("page_news_time").set("value", new Date(0, 0, 0, val_time[0], val_time[1], 0));
     }
