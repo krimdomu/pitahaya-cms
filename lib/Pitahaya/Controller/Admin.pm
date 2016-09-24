@@ -385,14 +385,20 @@ sub page_PUT {
 
   my $ref = $self->req->json;
   if ($ref) {
+    $self->app->log->debug("Got data to update:");
+    $self->app->log->debug(Dumper($ref));
     my $page_type_name = $ref->{type_name};
     delete $ref->{type_name};
-    $ref->{type_id} = $self->_get_page_type_id( $site_o, $page_type_name );
+    $ref->{type_id} //= $self->_get_page_type_id( $site_o, $page_type_name );
 
-    my $content_type_name = $ref->{content_type_name};
-    delete $ref->{content_type_name};
-    $ref->{content_type_id} =
-      $self->_get_content_type_id( $site_o, $content_type_name );
+    my ($content_type_name);
+
+    if($ref->{content_type_name}) {
+      $content_type_name = $ref->{content_type_name};
+      delete $ref->{content_type_name};
+      $ref->{content_type_id} =
+        $self->_get_content_type_id( $site_o, $content_type_name );
+    }
 
     $page_o->secure_update($ref);
 
