@@ -85,6 +85,10 @@ require([
           }
 
           var data = $GLOBAL.page;
+          // we need to remove this, because if this is set, this has 
+          // precedence over content_type_id.
+          // change of content type would not work
+          delete data['content_type_name'];
 
           var extra_data = $GLOBAL.page['data'] || {};
           for (var key in data) {
