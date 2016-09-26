@@ -3,7 +3,7 @@ FROM jfried/perl:latest
 ENV PITAHAYA_VERSION 0.1.9
 
 EXPOSE 8080
-#VOLUME ["/var/lib/pitahaya"]
+VOLUME ["/data"]
 
 ADD files/install.sh /usr/local/bin/install_pitahaya.sh
 RUN chmod 755 /usr/local/bin/install_pitahaya.sh
