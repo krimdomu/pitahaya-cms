@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 export PERL5LIB=/usr/share/pitahaya/local/lib/perl5
 export PATH=/usr/share/pitahaya/local/bin:$PATH
 
@@ -11,6 +13,14 @@ function start_cms() {
   hypnotoad -f bin/pitahaya
 
 }
+
+
+if [ -d "/cms.init" ]; then
+  for x in /cms.init/[0-9][0-9]*.sh; do
+    chmod 700 $x
+    $x start
+  done
+fi
 
 cd /var/lib/pitahaya
 
@@ -27,4 +37,11 @@ else
   bin/pitahaya admin site --create --name $SITE_NAME --skin $SITE_NAME
 
   start_cms
+fi
+
+if [ -d "/cms.finish" ]; then
+  for x in /cms.finish/[0-9][0-9]*.sh; do
+    chmod 700 $x
+    $x start
+  done
 fi

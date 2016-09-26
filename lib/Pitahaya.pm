@@ -22,7 +22,7 @@ has schema => sub {
     );
 };
 
-our $VERSION = "0.1.6";
+our $VERSION = "0.1.9";
 
 # This method will run once at server start
 sub startup {
