@@ -11,13 +11,10 @@ function start_cms() {
   bin/pitahaya admin db --update
 
   hypnotoad -f bin/pitahaya
-
 }
-
 
 if [ -d "/cms.init" ]; then
   for x in /cms.init/[0-9][0-9]*.sh; do
-    chmod 700 $x
     $x start
   done
 fi
@@ -41,7 +38,6 @@ fi
 
 if [ -d "/cms.finish" ]; then
   for x in /cms.finish/[0-9][0-9]*.sh; do
-    chmod 700 $x
     $x start
   done
 fi
